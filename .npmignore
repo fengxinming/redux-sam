@@ -13,5 +13,7 @@ npm-debug.log
 coverage/
 examples/
 scripts/
-test/
+tests/
+ydoc/
+docs/
 .vscode

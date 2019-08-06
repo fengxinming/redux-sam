@@ -9,9 +9,7 @@ export default function reducer(sam) {
       return prevState;
     }
 
-    const { _mutations, _subscribers } = sam;
-
-    const entry = _mutations[type];
+    const entry = sam._mutations[type];
     if (!entry) {
       if (process.env.NODE_ENV !== 'production') {
         console.error(`[redux-sam] unknown mutation type: ${type}`);
@@ -23,7 +21,7 @@ export default function reducer(sam) {
     let changed = entry.reduce((lastest, handler) => lastest + (handler(payload) === false ? 0 : 1), 0);
 
     const currentState = sam.state;
-    _subscribers.forEach(sub => sub(mutation, currentState));
+    sam._subscribers.forEach(sub => sub(mutation, currentState));
 
     return changed ? assign({}, currentState) : currentState;
   };

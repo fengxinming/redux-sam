@@ -1,7 +1,7 @@
 {
   "name": "redux-sam",
-  "version": "1.0.0-beta.1",
-  "description": "redux-sam is middleware of redux for using it like vuex.",
+  "version": "1.0.0-beta.2",
+  "description": "redux-sam is a middleware of Redux for managing state like Vuex.",
   "main": "./index.js",
   "module": "./es.js",
   "unpkg": "./umd.js",
@@ -12,10 +12,15 @@
   },
   "scripts": {
     "test": "jest --detectOpenHandles --config jest.config.js",
-    "build": "node ./scripts/build.js"
+    "build": "node ./scripts/build.js",
+    "dev": "node ./scripts/watch.js",
+    "gh-pages": "git subtree push --prefix=docs origin gh-pages"
   },
   "keywords": [
-    "redux"
+    "redux",
+    "flux",
+    "reducer",
+    "state"
   ],
   "author": "Jesse Feng",
   "license": "MIT",

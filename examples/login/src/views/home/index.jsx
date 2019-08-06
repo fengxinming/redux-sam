@@ -25,7 +25,7 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <button onClick={this.click}>点击按钮</button>
+          <button className="test-button" onClick={this.click}>点击按钮</button>
           <div>{this.state.key.key1.key11}</div>
           <div>{this.state.key.key2.key22}</div>
           <p>
