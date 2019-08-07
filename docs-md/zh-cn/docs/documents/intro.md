@@ -4,7 +4,7 @@
 
 ## 最简单的 Store
 
-redux-sam Vuex 之后，让我们来创建一个 store。创建过程直截了当——仅需要提供一个初始 state 对象和一些 mutation：
+安装 redux-sam 之后，让我们来创建一个 store。创建过程直截了当——仅需要提供一个初始 state 对象和一些 mutation：
 
 ```js
 import { createStore, applyMiddleware } from 'redux';

@@ -29,7 +29,7 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
 ```
 
-Action 函数接受一个与 store 实例具有相同方法和属性的 context 对象，因此你可以调用 context.dispatch 提交一个 mutation，或者通过 context.state 来获取 state。当我们在之后介绍到 Modules 时，你就知道 context 对象为什么不是 store 实例本身了。
+Action 函数接受一个与 sam 实例具有相同方法和属性的 context 对象，因此你可以调用 context.dispatch 提交一个 mutation，或者通过 context.state 来获取 state。当我们在之后介绍到 Modules 时，你就知道 context 对象为什么不是 sam 实例本身了。
 
 实践中，我们会经常用到 ES2015 的 参数解构 来简化代码（特别是我们需要调用 dispatch 很多次的时候）：
 
@@ -44,7 +44,7 @@ actions: {
 
 ## 分发 Action
 
-Action 通过 store.dispatch 方法触发：
+Action 通过 sam.dispatch 方法触发：
 
 ```js
 store.dispatch('increment', null, { async: true })
@@ -178,14 +178,23 @@ store.dispatch('actionA', null, { async: true }).then(() => {
 
 ```
 
+或者
+
+```js
+sam.dispatch('actionA').then(() => {
+  // ...
+})
+
+```
+
 在另外一个 action 中也可以：
 
 ```js
 actions: {
   // ...
-  actionB ({ dispatch }) {
-    return dispatch('actionA', null, { async: true }).then(() => {
-      dispatch('someOtherMutation')
+  actionB ({ dispatch, commit }) {
+    return dispatch('actionA').then(() => {
+      commit('someOtherMutation')
     })
   }
 }
@@ -198,12 +207,12 @@ actions: {
 // 假设 getData() 和 getOtherData() 返回的是 Promise
 
 actions: {
-  async actionA ({ dispatch }) {
-    dispatch('gotData', await getData())
+  async actionA ({ commit }) {
+    commit('gotData', await getData())
   },
-  async actionB ({ dispatch }) {
+  async actionB ({ dispatch, commit }) {
     await dispatch('actionA', null, { async: true }) // 等待 actionA 完成
-    dispatch('gotOtherData', await getOtherData())
+    commit('gotOtherData', await getOtherData())
   }
 }
 

@@ -2,13 +2,13 @@ window.ydoc_plugin_search_json = {
   "文档": [
     {
       "title": "redux-sam",
-      "content": "redux-sam 作为一个Redux插件，让你像使用Vuex一样管理状态.",
+      "content": "redux-sam 作为一个Redux中间件，让你像使用Vuex一样管理状态.\n笔者是一位 Vue 患者，",
       "url": "/documents/index.html",
       "children": []
     },
     {
       "title": "安装",
-      "content": "npm install --save redux-sam\n\n",
+      "content": "npm install --save redux-sam\n\n或者通过 script 方式加载\n  // window.reduxSam\n  reduxSam.Sam\n  reduxSam.middleware\n  reduxSam.reducer\n\n\n",
       "url": "/documents/installation.html",
       "children": []
     },
@@ -20,7 +20,7 @@ window.ydoc_plugin_search_json = {
         {
           "title": "最简单的 Store",
           "url": "/documents/intro.html#最简单的-store",
-          "content": "最简单的 Storeredux-sam Vuex 之后，让我们来创建一个 store。创建过程直截了当——仅需要提供一个初始 state 对象和一些 mutation：import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  }\n});\n\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\n现在，你可以通过 sam.state or store.getState() 来获取状态对象，以及通过 store.dispatch 方法触发状态变更：store.dispatch('increment')\nconsole.log(store.getState().count) // -> 1\n\n或者sam.commit('increment')\nconsole.log(sam.state.count) // -> 1\n\n再次强调，我们通过提交 mutation 的方式，而非直接改变 store.getState().count，是因为我们想要更明确地追踪到状态的变化。这个简单的约定能够让你的意图更加明显，这样你在阅读代码的时候能更容易地解读应用内部的状态改变。此外，这样也让我们有机会去实现一些能记录每次状态改变，保存状态快照的调试工具。有了它，我们甚至可以实现如时间穿梭般的调试体验。"
+          "content": "最简单的 Store安装 redux-sam 之后，让我们来创建一个 store。创建过程直截了当——仅需要提供一个初始 state 对象和一些 mutation：import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  }\n});\n\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\n现在，你可以通过 sam.state or store.getState() 来获取状态对象，以及通过 store.dispatch 方法触发状态变更：store.dispatch('increment')\nconsole.log(store.getState().count) // -> 1\n\n或者sam.commit('increment')\nconsole.log(sam.state.count) // -> 1\n\n再次强调，我们通过提交 mutation 的方式，而非直接改变 store.getState().count，是因为我们想要更明确地追踪到状态的变化。这个简单的约定能够让你的意图更加明显，这样你在阅读代码的时候能更容易地解读应用内部的状态改变。此外，这样也让我们有机会去实现一些能记录每次状态改变，保存状态快照的调试工具。有了它，我们甚至可以实现如时间穿梭般的调试体验。"
         }
       ]
     },
@@ -81,13 +81,13 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "Action",
-      "content": "Action 类似于 mutation，不同在于：Action 提交的是 mutation，而不是直接变更状态。\nAction 可以包含任意异步操作。\n让我们来注册一个简单的 action：import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\nconst sam = new Sam({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  },\n  actions: {\n    increment (context) {\n      context.commit('increment')\n    }\n  }\n})\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\nAction 函数接受一个与 store 实例具有相同方法和属性的 context 对象，因此你可以调用 context.dispatch 提交一个 mutation，或者通过 context.state 来获取 state。当我们在之后介绍到 Modules 时，你就知道 context 对象为什么不是 store 实例本身了。实践中，我们会经常用到 ES2015 的 参数解构 来简化代码（特别是我们需要调用 dispatch 很多次的时候）：actions: {  increment ({ commit }) {\n    commit('increment')\n  }\n}\n\n",
+      "content": "Action 类似于 mutation，不同在于：Action 提交的是 mutation，而不是直接变更状态。\nAction 可以包含任意异步操作。\n让我们来注册一个简单的 action：import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\nconst sam = new Sam({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  },\n  actions: {\n    increment (context) {\n      context.commit('increment')\n    }\n  }\n})\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\nAction 函数接受一个与 sam 实例具有相同方法和属性的 context 对象，因此你可以调用 context.dispatch 提交一个 mutation，或者通过 context.state 来获取 state。当我们在之后介绍到 Modules 时，你就知道 context 对象为什么不是 sam 实例本身了。实践中，我们会经常用到 ES2015 的 参数解构 来简化代码（特别是我们需要调用 dispatch 很多次的时候）：actions: {  increment ({ commit }) {\n    commit('increment')\n  }\n}\n\n",
       "url": "/documents/actions.html",
       "children": [
         {
           "title": "分发 Action",
           "url": "/documents/actions.html#分发-action",
-          "content": "分发 ActionAction 通过 store.dispatch 方法触发：store.dispatch('increment', null, { async: true })\n或者sam.dispatch('increment')\n乍一眼看上去感觉多此一举，我们直接分发 mutation 岂不更方便？实际上并非如此，还记得 mutation 必须同步执行这个限制么？Action 就不受约束！我们可以在 action 内部执行异步操作：actions: {  incrementAsync ({ commit }) {\n    setTimeout(() => {\n      commit('increment')\n    }, 1000)\n  }\n}\n\nActions 支持同样的载荷方式和对象方式进行分发：// 以载荷形式分发store.dispatch('incrementAsync', {\n  amount: 10\n}, { async: true })\n\n// 以对象形式分发\nstore.dispatch({\n  type: 'incrementAsync',\n  payload: {\n    amount: 10\n  },\n  options: { async: true }\n})\n\n或者// 以载荷形式分发sam.dispatch('incrementAsync', {\n  amount: 10\n})\n\n// 以对象形式分发\nsam.dispatch({\n  type: 'incrementAsync',\n  payload: {\n    amount: 10\n  }\n})\n\n来看一个更加实际的购物车示例，涉及到调用异步 API 和分发多重 mutation：actions: {  checkout ({ commit, state }, products) {\n    // 把当前购物车的物品备份起来\n    const savedCartItems = [...state.cart.added]\n    // 发出结账请求，然后乐观地清空购物车\n    commit(types.CHECKOUT_REQUEST)\n    // 购物 API 接受一个成功回调和一个失败回调\n    shop.buyProducts(\n      products,\n      // 成功操作\n      () => commit(types.CHECKOUT_SUCCESS),\n      // 失败操作\n      () => commit(types.CHECKOUT_FAILURE, savedCartItems)\n    )\n  }\n}\n\n注意我们正在进行一系列的异步操作，并且通过提交 mutation 来记录 action 产生的副作用（即状态变更）。"
+          "content": "分发 ActionAction 通过 sam.dispatch 方法触发：store.dispatch('increment', null, { async: true })\n或者sam.dispatch('increment')\n乍一眼看上去感觉多此一举，我们直接分发 mutation 岂不更方便？实际上并非如此，还记得 mutation 必须同步执行这个限制么？Action 就不受约束！我们可以在 action 内部执行异步操作：actions: {  incrementAsync ({ commit }) {\n    setTimeout(() => {\n      commit('increment')\n    }, 1000)\n  }\n}\n\nActions 支持同样的载荷方式和对象方式进行分发：// 以载荷形式分发store.dispatch('incrementAsync', {\n  amount: 10\n}, { async: true })\n\n// 以对象形式分发\nstore.dispatch({\n  type: 'incrementAsync',\n  payload: {\n    amount: 10\n  },\n  options: { async: true }\n})\n\n或者// 以载荷形式分发sam.dispatch('incrementAsync', {\n  amount: 10\n})\n\n// 以对象形式分发\nsam.dispatch({\n  type: 'incrementAsync',\n  payload: {\n    amount: 10\n  }\n})\n\n来看一个更加实际的购物车示例，涉及到调用异步 API 和分发多重 mutation：actions: {  checkout ({ commit, state }, products) {\n    // 把当前购物车的物品备份起来\n    const savedCartItems = [...state.cart.added]\n    // 发出结账请求，然后乐观地清空购物车\n    commit(types.CHECKOUT_REQUEST)\n    // 购物 API 接受一个成功回调和一个失败回调\n    shop.buyProducts(\n      products,\n      // 成功操作\n      () => commit(types.CHECKOUT_SUCCESS),\n      // 失败操作\n      () => commit(types.CHECKOUT_FAILURE, savedCartItems)\n    )\n  }\n}\n\n注意我们正在进行一系列的异步操作，并且通过提交 mutation 来记录 action 产生的副作用（即状态变更）。"
         },
         {
           "title": "在组件中分发 Action",
@@ -97,7 +97,7 @@ window.ydoc_plugin_search_json = {
         {
           "title": "组合 Action",
           "url": "/documents/actions.html#组合-action",
-          "content": "组合 ActionAction 通常是异步的，那么如何知道 action 什么时候结束呢？更重要的是，我们如何才能组合多个 action，以处理更加复杂的异步流程？首先，你需要明白 store.dispatch 可以处理被触发的 action 的处理函数返回的 Promise，并且 store.dispatch 仍旧返回 Promise：actions: {  actionA ({ dispatch }) {\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        dispatch('someMutation')\n        resolve()\n      }, 1000)\n    })\n  }\n}\n\n现在你可以：store.dispatch('actionA', null, { async: true }).then(() => {  // ...\n})\n\n在另外一个 action 中也可以：actions: {  // ...\n  actionB ({ dispatch }) {\n    return dispatch('actionA', null, { async: true }).then(() => {\n      dispatch('someOtherMutation')\n    })\n  }\n}\n\n最后，如果我们利用 async / await，我们可以如下组合 action：// 假设 getData() 和 getOtherData() 返回的是 Promise\nactions: {\n  async actionA ({ dispatch }) {\n    dispatch('gotData', await getData())\n  },\n  async actionB ({ dispatch }) {\n    await dispatch('actionA', null, { async: true }) // 等待 actionA 完成\n    dispatch('gotOtherData', await getOtherData())\n  }\n}\n\n一个 store.dispatch 在不同模块中可以触发多个 action 函数。在这种情况下，只有当所有触发函数完成后，返回的 Promise 才会执行。\n"
+          "content": "组合 ActionAction 通常是异步的，那么如何知道 action 什么时候结束呢？更重要的是，我们如何才能组合多个 action，以处理更加复杂的异步流程？首先，你需要明白 store.dispatch 可以处理被触发的 action 的处理函数返回的 Promise，并且 store.dispatch 仍旧返回 Promise：actions: {  actionA ({ dispatch }) {\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        dispatch('someMutation')\n        resolve()\n      }, 1000)\n    })\n  }\n}\n\n现在你可以：store.dispatch('actionA', null, { async: true }).then(() => {  // ...\n})\n\n或者sam.dispatch('actionA').then(() => {  // ...\n})\n\n在另外一个 action 中也可以：actions: {  // ...\n  actionB ({ dispatch, commit }) {\n    return dispatch('actionA').then(() => {\n      commit('someOtherMutation')\n    })\n  }\n}\n\n最后，如果我们利用 async / await，我们可以如下组合 action：// 假设 getData() 和 getOtherData() 返回的是 Promise\nactions: {\n  async actionA ({ commit }) {\n    commit('gotData', await getData())\n  },\n  async actionB ({ dispatch, commit }) {\n    await dispatch('actionA', null, { async: true }) // 等待 actionA 完成\n    commit('gotOtherData', await getOtherData())\n  }\n}\n\n一个 store.dispatch 在不同模块中可以触发多个 action 函数。在这种情况下，只有当所有触发函数完成后，返回的 Promise 才会执行。\n"
         }
       ]
     },
@@ -181,6 +181,105 @@ window.ydoc_plugin_search_json = {
       "content": "使用 webpack 的 Hot Module Replacement API，redux-sam 支持在开发过程中热重载 mutation、module和action。你也可以在 Browserify 中使用 browserify-hmr 插件。对于 mutation 和模块，你需要使用 store.hotUpdate() 方法：// store.jsimport { createStore, applyMiddleware } from 'redux';\nimport { Sam, reducer, middleware } from 'redux-sam';\nimport mutations from './mutations'\nimport moduleA from './modules/a'\n\nconst state = { ... }\n\nconst sam = new Sam({\n  state,\n  mutations,\n  modules: {\n    a: moduleA\n  }\n})\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\nif (module.hot) {\n  // 使 action 和 mutation 成为可热重载模块\n  module.hot.accept(['./mutations', './modules/a'], () => {\n    // 获取更新后的模块\n    // 因为 babel 6 的模块编译格式问题，这里需要加上 `.default`\n    const newMutations = require('./mutations').default\n    const newModuleA = require('./modules/a').default\n    // 加载新模块\n    sam.hotUpdate({\n      mutations: newMutations,\n      modules: {\n        a: newModuleA\n      }\n    })\n  })\n}\n\n参考热重载示例 counter-hot。",
       "url": "/documents/hot-reload.html",
       "children": []
+    }
+  ],
+  "API参考": [
+    {
+      "title": "API 参考",
+      "content": "",
+      "url": "/api/index.html",
+      "children": [
+        {
+          "title": "Sam",
+          "url": "/api/index.html#sam",
+          "content": "Samimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({ ... });\n\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\n"
+        },
+        {
+          "title": "Sam 构造器选项",
+          "url": "/api/index.html#sam-构造器选项",
+          "content": "Sam 构造器选项"
+        },
+        {
+          "title": "state",
+          "url": "/api/index.html#sam-构造器选项-state",
+          "content": "state\n类型: Object | Function\nSam 实例的根 state 对象。详细介绍\n如果你传入返回一个对象的函数，其返回的对象会被用作根 state。这在你想要重用 state 对象，尤其是对于重用 module 来说非常有用。详细介绍\n\n"
+        },
+        {
+          "title": "mutations",
+          "url": "/api/index.html#sam-构造器选项-mutations",
+          "content": "mutations\n类型: { [type: string]: Function }\n在 sam 上注册 mutation，处理函数总是接受 state 作为第一个参数（如果定义在模块中，则为模块的局部状态），payload 作为第二个参数（可选）。\n\n"
+        },
+        {
+          "title": "actions",
+          "url": "/api/index.html#sam-构造器选项-actions",
+          "content": "actions\n类型: { [type: string]: Function }\n在 sam 上注册 action。处理函数总是接受 context 作为第一个参数，payload 作为第二个参数（可选）。\ncontext 对象包含以下属性：\n{\n  state,      // 等同于 `sam.state`，若在模块中则为局部状态\n  rootState,  // 等同于 `sam.state`，只存在于模块中\n  commit,     // 等同于 `sam.commit`\n  dispatch,   // 等同于 `sam.dispatch`\n}\n\n\n同时如果有第二个参数 payload 的话也能够接收。\n\n"
+        },
+        {
+          "title": "modules",
+          "url": "/api/index.html#sam-构造器选项-modules",
+          "content": "modules\n类型: Object\n包含了子模块的对象，会被合并到 sam，大概长这样：\n{\n  key: {\n    state,\n    namespaced?,\n    mutations,\n    actions?,\n    modules?\n  },\n  ...\n}\n\n\n与根模块的选项一样，每个模块也包含 state 和 mutations 选项。模块的状态使用 key 关联到 sam 的根状态。模块的 mutation 只会接收 module 的局部状态作为第一个参数，而不是根状态，并且模块 action 的 context.state 同样指向局部状态。\n\n"
+        },
+        {
+          "title": "plugins",
+          "url": "/api/index.html#sam-构造器选项-plugins",
+          "content": "plugins\n类型: Array\n一个数组，包含应用在 sam 上的插件方法。这些插件直接接收 sam 作为唯一参数，可以监听 mutation（用于外部地数据持久化、记录或调试）或者提交 mutation （用于内部数据，例如 websocket 或 某些观察者）\n\n"
+        },
+        {
+          "title": "Sam 实例属性",
+          "url": "/api/index.html#sam-实例属性",
+          "content": "Sam 实例属性"
+        },
+        {
+          "title": "state",
+          "url": "/api/index.html#sam-实例属性-state",
+          "content": "state\n类型: Object\n根状态，只读。\n\n"
+        },
+        {
+          "title": "Sam 实例方法",
+          "url": "/api/index.html#sam-实例方法",
+          "content": "Sam 实例方法"
+        },
+        {
+          "title": "commit",
+          "url": "/api/index.html#sam-实例方法-commit",
+          "content": "commit\ncommit(type: string, payload?: any, options?: Object)\n\n\ncommit(mutation: Object, options?: Object)\n提交 mutation。options 里可以有 root: true，它允许在命名空间模块里提交根的 mutation。详细介绍\n\n"
+        },
+        {
+          "title": "dispatch",
+          "url": "/api/index.html#sam-实例方法-dispatch",
+          "content": "dispatch\ndispatch(type: string, payload?: any, options?: Object)\n\n\ndispatch(action: Object, options?: Object)\n分发 action。options 里可以有 root: true，它允许在命名空间模块里分发根的 action。返回一个解析所有被触发的 action 处理器的 Promise。详细介绍\n\n"
+        },
+        {
+          "title": "replaceState",
+          "url": "/api/index.html#sam-实例方法-replacestate",
+          "content": "replaceStatereplaceState(state: Object)\n替换 sam 的根状态，仅用状态合并或时光旅行调试。"
+        },
+        {
+          "title": "subscribe",
+          "url": "/api/index.html#sam-实例方法-subscribe",
+          "content": "subscribe\nsubscribe(handler: Function): Function\n订阅 sam 的 mutation。handler 会在每个 mutation 完成后调用，接收 mutation 和经过 mutation 后的状态作为参数：\nsam.subscribe((mutation, state) => {\n  console.log(mutation.type)\n  console.log(mutation.payload)\n})\n\n\n要停止订阅，调用此方法返回的函数即可停止订阅。\n通常用于插件。详细介绍\n\n"
+        },
+        {
+          "title": "subscribeAction",
+          "url": "/api/index.html#sam-实例方法-subscribeaction",
+          "content": "subscribeAction\nsubscribeAction(handler: Function): Function\n订阅 sam 的 action。handler 会在每个 action 分发的时候调用并接收 action 描述和当前的 sam 的 state 这两个参数：\nsam.subscribeAction((action, state) => {\n  console.log(action.type)\n  console.log(action.payload)\n})\n\n\nsubscribeAction 也可以指定订阅处理函数的被调用时机应该在一个 action 分发之前还是之后 (默认行为是之前)：\nsam.subscribeAction({\n  before: (action, state) => {\n    console.log(`before action ${action.type}`)\n  },\n  after: (action, state) => {\n    console.log(`after action ${action.type}`)\n  }\n})\n\n\n该功能常用于插件。详细介绍\n\n"
+        },
+        {
+          "title": "registerModule",
+          "url": "/api/index.html#sam-实例方法-registermodule",
+          "content": "registerModule\nregisterModule(path: string | Array, module: Module, options?: Object)\n注册一个动态模块。详细介绍\noptions 可以包含 preserveState: true 以允许保留之前的 state。用于服务端渲染。\n\n"
+        },
+        {
+          "title": "unregisterModule",
+          "url": "/api/index.html#sam-实例方法-unregistermodule",
+          "content": "unregisterModule\nunregisterModule(path: string | Array)\n卸载一个动态模块。详细介绍\n\n"
+        },
+        {
+          "title": "hotUpdate",
+          "url": "/api/index.html#sam-实例方法-hotupdate",
+          "content": "hotUpdate\nhotUpdate(newOptions: Object)\n热替换新的 action 和 mutation。详细介绍\n\n"
+        }
+      ]
     }
   ]
 }
