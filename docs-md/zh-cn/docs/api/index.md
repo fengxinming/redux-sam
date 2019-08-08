@@ -1,5 +1,13 @@
 # API 参考
 
+## reducer
+
+调用 `createStore` 时传入的第一个参数，该函数主要用于调度指定的 `mutation`。
+
+## middleware
+
+调用 `createStore` 时传入的第三个参数，该函数主要用于调度指定的 `action`。
+
 ## Sam
 
 ```js
@@ -18,15 +26,17 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
 - 类型: Object | Function
 
-  Sam 实例的根 state 对象。详细介绍
+  Sam 实例的根 state 对象。[详细介绍](../documents/state.html)
 
-  如果你传入返回一个对象的函数，其返回的对象会被用作根 state。这在你想要重用 state 对象，尤其是对于重用 module 来说非常有用。详细介绍
+  如果你传入返回一个对象的函数，其返回的对象会被用作根 state。这在你想要重用 state 对象，尤其是对于重用 module 来说非常有用。[详细介绍](../documents/modules.html#模块重用)
 
 ### mutations
 
 - 类型: { [type: string]: Function }
 
   在 sam 上注册 mutation，处理函数总是接受 `state` 作为第一个参数（如果定义在模块中，则为模块的局部状态），`payload` 作为第二个参数（可选）。
+
+  [详细介绍](../documents/mutations.html)
 
 ### actions
 - 类型: { [type: string]: Function }
@@ -46,6 +56,8 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
   ```
 
   同时如果有第二个参数 `payload` 的话也能够接收。
+
+  [详细介绍](../documents/actions.html)
 
 ### modules
 
@@ -69,11 +81,15 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
   与根模块的选项一样，每个模块也包含 `state` 和 `mutations` 选项。模块的状态使用 key 关联到 sam 的根状态。模块的 mutation 只会接收 module 的局部状态作为第一个参数，而不是根状态，并且模块 action 的 `context.state` 同样指向局部状态。
 
+  [详细介绍](../documents/modules.html)
+
 ### plugins
 
 - 类型: Array<Function>
 
   一个数组，包含应用在 sam 上的插件方法。这些插件直接接收 sam 作为唯一参数，可以监听 mutation（用于外部地数据持久化、记录或调试）或者提交 mutation （用于内部数据，例如 websocket 或 某些观察者）
+
+  [详细介绍](../documents/plugins.html)
 
 ## Sam 实例属性
 
@@ -91,7 +107,9 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
 - `commit(mutation: Object, options?: Object)`
 
-  提交 mutation。options 里可以有 root: true，它允许在命名空间模块里提交根的 mutation。详细介绍
+  提交 mutation。options 里可以有 root: true，它允许在[命名空间模块](../documents/modules.html#命名空间)里提交根的 mutation。
+
+  [详细介绍](../documents/mutations.html)
 
 ### dispatch
 
@@ -99,7 +117,9 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
 - `dispatch(action: Object, options?: Object)`
 
-  分发 action。options 里可以有 root: true，它允许在命名空间模块里分发根的 action。返回一个解析所有被触发的 action 处理器的 Promise。详细介绍
+  分发 action。options 里可以有 root: true，它允许在[命名空间模块](../documents/modules.html#命名空间)里分发根的 action。返回一个解析所有被触发的 action 处理器的 Promise。
+
+  [详细介绍](../documents/actions.html)
 
 ### replaceState
 
@@ -123,7 +143,7 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
   要停止订阅，调用此方法返回的函数即可停止订阅。
 
-  通常用于插件。详细介绍
+  通常用于插件。[详细介绍](../documents/plugins.html)
 
 ### subscribeAction
 
@@ -153,13 +173,13 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
   ```
 
-  该功能常用于插件。详细介绍
+  该功能常用于插件。[详细介绍](../documents/plugins.html)
 
 ### registerModule
 
 - `registerModule(path: string | Array<string>, module: Module, options?: Object)`
 
-  注册一个动态模块。详细介绍
+  注册一个动态模块。[详细介绍](../documents/modules.html#模块动态注册)
 
   options 可以包含 preserveState: true 以允许保留之前的 state。用于服务端渲染。
 
@@ -167,10 +187,10 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
 - `unregisterModule(path: string | Array<string>)`
 
-  卸载一个动态模块。详细介绍
+  卸载一个动态模块。[详细介绍](../documents/modules.html#模块动态注册)
 
 ### hotUpdate
 
 - `hotUpdate(newOptions: Object)`
 
-  热替换新的 action 和 mutation。详细介绍
+  热替换新的 action 和 mutation。[详细介绍](../documents/hot-reload.html)

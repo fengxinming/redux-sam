@@ -1,5 +1,7 @@
 # 摘要
 
+* [reducer](index.md#reducer)
+* [middleware](index.md#middleware)
 * [Sam](index.md#Sam)
 * [Sam 构造器选项](index.md#Sam-构造器选项)
   * [state](index.md#Sam-构造器选项-state)

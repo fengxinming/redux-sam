@@ -2,7 +2,7 @@ window.ydoc_plugin_search_json = {
   "文档": [
     {
       "title": "redux-sam",
-      "content": "redux-sam 作为一个Redux中间件，让你像使用Vuex一样管理状态.\n笔者是一位 Vue 患者，",
+      "content": "redux-sam 作为一个 Redux 中间件，让你像使用Vuex一样管理状态。\n笔者是一位 Vue 患者，从深圳来到杭州之后，发现 React 一直占据着杭州市场。最近在接手老项目过程中发现，前人对 Dva 的使用方式跟Vuex类似，除了每次在reducer最后返回新对象。笔者在思考能不能像 Vuex 一样简单而纯粹地管理状态，而不是像 Dva 一样在 redux-saga 上进行二次封装。因此，在借(chao)鉴(xi) Vuex 的代码之后，孕育出了一个 Redux 中间件 redux-sam。",
       "url": "/documents/index.html",
       "children": []
     },
@@ -190,6 +190,16 @@ window.ydoc_plugin_search_json = {
       "url": "/api/index.html",
       "children": [
         {
+          "title": "reducer",
+          "url": "/api/index.html#reducer",
+          "content": "reducer调用 createStore 时传入的第一个参数，该函数主要用于调度指定的 mutation。"
+        },
+        {
+          "title": "middleware",
+          "url": "/api/index.html#middleware",
+          "content": "middleware调用 createStore 时传入的第三个参数，该函数主要用于调度指定的 action。"
+        },
+        {
           "title": "Sam",
           "url": "/api/index.html#sam",
           "content": "Samimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({ ... });\n\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\n"
@@ -207,22 +217,22 @@ window.ydoc_plugin_search_json = {
         {
           "title": "mutations",
           "url": "/api/index.html#sam-构造器选项-mutations",
-          "content": "mutations\n类型: { [type: string]: Function }\n在 sam 上注册 mutation，处理函数总是接受 state 作为第一个参数（如果定义在模块中，则为模块的局部状态），payload 作为第二个参数（可选）。\n\n"
+          "content": "mutations\n类型: { [type: string]: Function }\n在 sam 上注册 mutation，处理函数总是接受 state 作为第一个参数（如果定义在模块中，则为模块的局部状态），payload 作为第二个参数（可选）。\n详细介绍\n\n"
         },
         {
           "title": "actions",
           "url": "/api/index.html#sam-构造器选项-actions",
-          "content": "actions\n类型: { [type: string]: Function }\n在 sam 上注册 action。处理函数总是接受 context 作为第一个参数，payload 作为第二个参数（可选）。\ncontext 对象包含以下属性：\n{\n  state,      // 等同于 `sam.state`，若在模块中则为局部状态\n  rootState,  // 等同于 `sam.state`，只存在于模块中\n  commit,     // 等同于 `sam.commit`\n  dispatch,   // 等同于 `sam.dispatch`\n}\n\n\n同时如果有第二个参数 payload 的话也能够接收。\n\n"
+          "content": "actions\n类型: { [type: string]: Function }\n在 sam 上注册 action。处理函数总是接受 context 作为第一个参数，payload 作为第二个参数（可选）。\ncontext 对象包含以下属性：\n{\n  state,      // 等同于 `sam.state`，若在模块中则为局部状态\n  rootState,  // 等同于 `sam.state`，只存在于模块中\n  commit,     // 等同于 `sam.commit`\n  dispatch,   // 等同于 `sam.dispatch`\n}\n\n\n同时如果有第二个参数 payload 的话也能够接收。\n详细介绍\n\n"
         },
         {
           "title": "modules",
           "url": "/api/index.html#sam-构造器选项-modules",
-          "content": "modules\n类型: Object\n包含了子模块的对象，会被合并到 sam，大概长这样：\n{\n  key: {\n    state,\n    namespaced?,\n    mutations,\n    actions?,\n    modules?\n  },\n  ...\n}\n\n\n与根模块的选项一样，每个模块也包含 state 和 mutations 选项。模块的状态使用 key 关联到 sam 的根状态。模块的 mutation 只会接收 module 的局部状态作为第一个参数，而不是根状态，并且模块 action 的 context.state 同样指向局部状态。\n\n"
+          "content": "modules\n类型: Object\n包含了子模块的对象，会被合并到 sam，大概长这样：\n{\n  key: {\n    state,\n    namespaced?,\n    mutations,\n    actions?,\n    modules?\n  },\n  ...\n}\n\n\n与根模块的选项一样，每个模块也包含 state 和 mutations 选项。模块的状态使用 key 关联到 sam 的根状态。模块的 mutation 只会接收 module 的局部状态作为第一个参数，而不是根状态，并且模块 action 的 context.state 同样指向局部状态。\n详细介绍\n\n"
         },
         {
           "title": "plugins",
           "url": "/api/index.html#sam-构造器选项-plugins",
-          "content": "plugins\n类型: Array\n一个数组，包含应用在 sam 上的插件方法。这些插件直接接收 sam 作为唯一参数，可以监听 mutation（用于外部地数据持久化、记录或调试）或者提交 mutation （用于内部数据，例如 websocket 或 某些观察者）\n\n"
+          "content": "plugins\n类型: Array\n一个数组，包含应用在 sam 上的插件方法。这些插件直接接收 sam 作为唯一参数，可以监听 mutation（用于外部地数据持久化、记录或调试）或者提交 mutation （用于内部数据，例如 websocket 或 某些观察者）\n详细介绍\n\n"
         },
         {
           "title": "Sam 实例属性",
@@ -242,12 +252,12 @@ window.ydoc_plugin_search_json = {
         {
           "title": "commit",
           "url": "/api/index.html#sam-实例方法-commit",
-          "content": "commit\ncommit(type: string, payload?: any, options?: Object)\n\n\ncommit(mutation: Object, options?: Object)\n提交 mutation。options 里可以有 root: true，它允许在命名空间模块里提交根的 mutation。详细介绍\n\n"
+          "content": "commit\ncommit(type: string, payload?: any, options?: Object)\n\n\ncommit(mutation: Object, options?: Object)\n提交 mutation。options 里可以有 root: true，它允许在命名空间模块里提交根的 mutation。\n详细介绍\n\n"
         },
         {
           "title": "dispatch",
           "url": "/api/index.html#sam-实例方法-dispatch",
-          "content": "dispatch\ndispatch(type: string, payload?: any, options?: Object)\n\n\ndispatch(action: Object, options?: Object)\n分发 action。options 里可以有 root: true，它允许在命名空间模块里分发根的 action。返回一个解析所有被触发的 action 处理器的 Promise。详细介绍\n\n"
+          "content": "dispatch\ndispatch(type: string, payload?: any, options?: Object)\n\n\ndispatch(action: Object, options?: Object)\n分发 action。options 里可以有 root: true，它允许在命名空间模块里分发根的 action。返回一个解析所有被触发的 action 处理器的 Promise。\n详细介绍\n\n"
         },
         {
           "title": "replaceState",
