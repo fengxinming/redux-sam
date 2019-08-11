@@ -19,5 +19,6 @@ function configure(input, output, name) {
 }
 
 module.exports = [
-  configure(resolve('src/index.js'), resolve(`npm/iife.js`))
+  configure(resolve('src/index.js'), resolve(`npm/iife.js`)),
+  configure(resolve('src/plugins/logger'), resolve(`npm/logger.iife.js`), 'createSamLogger')
 ];

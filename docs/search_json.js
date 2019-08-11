@@ -8,7 +8,7 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "安装",
-      "content": "npm install --save redux-sam\n\n或者通过 script 方式加载\n  // window.reduxSam\n  reduxSam.Sam\n  reduxSam.middleware\n  reduxSam.reducer\n\n\n",
+      "content": "npm install --save redux-sam\n\n或者通过 script 方式加载\n  // window.reduxSam\n  reduxSam.Sam\n  reduxSam.middleware\n  reduxSam.reducer\n\n\n\n  // window.createSamLogger\n\n\n",
       "url": "/documents/installation.html",
       "children": []
     },
@@ -43,7 +43,7 @@ window.ydoc_plugin_search_json = {
         {
           "title": "在 React 组件中获得 redux 状态",
           "url": "/documents/state.html#在-react-组件中获得-redux-状态",
-          "content": "在 React 组件中获得 redux 状态那么我们如何在 React 组件中展示状态呢？通过connect方法把state中的值作为属性传入组件：// 创建一个 Counter 组件class Counter extends Component {\n  render() {\n    return (\n      {this.props.count}\n    );\n  }\n}\nexport default connect(state => state)(Counter);\n\n每当 getState().count 变化的时候, 都会重新求取计算属性，并且触发更新相关联的 DOM。"
+          "content": "在 React 组件中获得 redux 状态那么我们如何在 React 组件中展示状态呢？通过connect方法把state中的值作为属性传入组件：// 创建一个 Counter 组件class Counter extends Component {\n  render() {\n    return (\n      {this.props.count}\n    );\n  }\n}\nexport default connect(state => { count: state.count })(Counter);\n\n每当 getState().count 变化的时候, 都会重新求取计算属性，并且触发更新相关联的 DOM。"
         }
       ]
     },
@@ -172,7 +172,7 @@ window.ydoc_plugin_search_json = {
         {
           "title": "内置 Logger 插件",
           "url": "/documents/plugins.html#内置-logger-插件",
-          "content": "内置 Logger 插件import createLogger from 'redux-sam/logger'\nconst sam = new Sam({\n  plugins: [createLogger()]\n})\n\ncreateLogger 函数有几个配置项：const logger = createLogger({  collapsed: false, // 自动展开记录的 mutation\n  filter (mutation, stateBefore, stateAfter) {\n    // 若 mutation 需要被记录，就让它返回 true 即可\n    // 顺便，`mutation` 是个 { type, payload } 对象\n    return mutation.type !== \"aBlacklistedMutation\"\n  },\n  transformer (state) {\n    // 在开始记录之前转换状态\n    // 例如，只返回指定的子树\n    return state.subTree\n  },\n  mutationTransformer (mutation) {\n    // mutation 按照 { type, payload } 格式记录\n    // 我们可以按任意方式格式化\n    return mutation.type\n  },\n  logger: console, // 自定义 console 实现，默认为 `console`\n})\n\n日志插件还可以直接通过  标签引入，它会提供全局方法 createReduxSamLogger。要注意，logger 插件会生成状态快照，所以仅在开发环境使用。"
+          "content": "内置 Logger 插件import createSamLogger from 'redux-sam/logger'\nconst sam = new Sam({\n  plugins: [createSamLogger()]\n})\n\ncreateSamLogger 函数有几个配置项：const logger = createSamLogger({  collapsed: false, // 自动展开记录的 mutation\n  filter (mutation, stateBefore, stateAfter) {\n    // 若 mutation 需要被记录，就让它返回 true 即可\n    // 顺便，`mutation` 是个 { type, payload } 对象\n    return mutation.type !== \"aBlacklistedMutation\"\n  },\n  transformer (state) {\n    // 在开始记录之前转换状态\n    // 例如，只返回指定的子树\n    return state.subTree\n  },\n  mutationTransformer (mutation) {\n    // mutation 按照 { type, payload } 格式记录\n    // 我们可以按任意方式格式化\n    return mutation.type\n  },\n  logger: console, // 自定义 console 实现，默认为 `console`\n})\n\n日志插件还可以直接通过  标签引入，它会提供全局方法 createReduxSamLogger。要注意，logger 插件会生成状态快照，所以仅在开发环境使用。"
         }
       ]
     },

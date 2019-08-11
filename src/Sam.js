@@ -38,7 +38,7 @@ export default class Sam {
     installModule(sam, [], options);
 
     // 执行插件
-    plugins.forEach(plugin => plugin(sam));
+    plugins.forEach(plugin => isFunction(plugin) && plugin(sam));
   }
 
   get state() {

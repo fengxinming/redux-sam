@@ -7,13 +7,13 @@ const { genConfig, resolve } = require('./util');
 const logger = getLogger('redux-sam');
 const esConfig = genConfig('es', {
   inputOptions: {
-    input: resolve('src/index.js'),
+    input: [resolve('src/index.js'), resolve('src/plugins/logger.js')],
     external: (id) => {
       return /^celia/.test(id);
     }
   },
   outputOptions: {
-    file: resolve(`examples/login/src/redux-sam.js`),
+    dir: resolve(`examples/login/src/redux-sam`),
     format: 'es'
   }
 });

@@ -23,6 +23,6 @@ function configure(input, output) {
 }
 
 module.exports = [
-  configure(resolve('src/index.js'), resolve(`npm/cjs.js`)),
-  configure(apiNames.map(dir => resolve(`src/${dir}.js`)), resolve(`npm`))
+  configure(apiNames.map(dir => resolve(`src/${dir}.js`)), resolve(`npm`)),
+  configure(resolve('src/plugins/logger'), resolve(`npm/logger.js`))
 ];
