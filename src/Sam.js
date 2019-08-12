@@ -4,7 +4,7 @@ import isObject from 'celia/isObject';
 import isPromiseLike from 'celia/isPromiseLike';
 import append from 'celia/_append';
 import forOwn from 'celia.object/forOwn';
-import { assert, assertRawModule, unifyObjectStyle, getNestedState, setChildState, removeChildState } from './lib/utils';
+import { assert, assertRawModule, unifyObjectStyle, getNestedState, setNestedState, removeNestedState } from './lib/utils';
 
 /**
  * 创建一个 redux-sam 实例用于解析state、mutations、actions和modules
@@ -117,7 +117,7 @@ export default class Sam {
       assert(Array.isArray(path), `module path must be a string or an Array.`);
     }
 
-    removeChildState(this._state, path);
+    removeNestedState(this._state, path);
 
     resetSam(this, this._rawRootModule);
   }
@@ -182,7 +182,7 @@ function makeLocalContext(sam, namespace, path) {
     setState(ret) {
       if (isObject(ret)) {
         path.length
-          ? setChildState(sam._state, path, ret)
+          ? setNestedState(sam._state, path, ret)
           : (sam._state = ret);
       }
       return ret;
@@ -256,7 +256,7 @@ function installModule(sam, path, rawModule, hot) {
 
     // 挂载子模块到跟模块下
     if (!hot) {
-      setChildState(sam._state, path, state);
+      setNestedState(sam._state, path, state);
     }
   } else {
     sam._state = state;

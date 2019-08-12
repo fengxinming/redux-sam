@@ -13,14 +13,14 @@ export function getNestedState(state, path) {
     : state;
 }
 
-export function setChildState(rootState, path, childState) {
+export function setNestedState(rootState, path, childState) {
   const lastIndex = path.length - 1;
   const parentState = getNestedState(rootState, path.slice(0, lastIndex));
   const moduleName = path[lastIndex];
   parentState[moduleName] = childState;
 }
 
-export function removeChildState(rootState, path) {
+export function removeNestedState(rootState, path) {
   const lastIndex = path.length - 1;
   const parentState = getNestedState(rootState, path.slice(0, lastIndex));
   const moduleName = path[lastIndex];
@@ -28,10 +28,11 @@ export function removeChildState(rootState, path) {
 }
 
 export function unifyObjectStyle(type, payload, options) {
-  if (isObject(type) && type.type) {
-    options = payload;
-    payload = type;
-    type = type.type;
+  let _type;
+  if (isObject(type) && (_type = type.type)) {
+    options = type.options;
+    payload = type.payload;
+    type = _type;
   }
 
   if (process.env.NODE_ENV !== 'production') {

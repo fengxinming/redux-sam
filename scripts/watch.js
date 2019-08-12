@@ -2,6 +2,7 @@
 
 const { getLogger } = require('clrsole');
 const rollup = require('rollup');
+const { copy } = require('fs-extra');
 const { genConfig, resolve } = require('./util');
 
 const logger = getLogger('redux-sam');
@@ -48,6 +49,11 @@ function watch() {
       case 'BUNDLE_END':
         output.forEach((n) => {
           logger.info(`打包完成 ${n}`);
+
+          const counter = `examples/counter/src/redux-sam`;
+          copy(n, resolve(counter)).then(() => {
+            logger.info(`复制 ${counter} 成功`);
+          });
         });
         break;
       case 'END':
