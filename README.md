@@ -60,6 +60,7 @@ const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sa
 
 ## Examples
 
+  - [counter](examples/counter)
   - [login](examples/login)
 
 Running the examples:

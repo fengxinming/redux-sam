@@ -1,4 +1,4 @@
-import { unifyObjectStyle } from './lib/utils';
+import { unifyObjectStyle, isProd } from './lib/utils';
 
 /**
  * 触发action订阅
@@ -15,7 +15,7 @@ function triggerActionSubscribers(actionSubscribers, method, action, state) {
         fn && fn(action, state);
       });
   } catch (e) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (!isProd) {
       console.warn(`[redux-sam] error in ${method} action subscribers: `);
       console.error(e);
     }
@@ -54,7 +54,7 @@ export default function middleware(sam) {
 
           const entry = _actions[type];
           if (!entry) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!isProd) {
               console.error(`[redux-sam] unknown action type: ${type}`);
             }
             return;

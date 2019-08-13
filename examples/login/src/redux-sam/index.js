@@ -1,38 +1,72 @@
 /*
- * redux-sam.js v1.0.2-beta.1
+ * redux-sam.js v1.0.2
  * (c) 2018-2019 Jesse Feng
  * Released under the MIT License.
  */
 import isFunction from 'celia/isFunction';
 import isString from 'celia/isString';
 import isObject from 'celia/isObject';
+import forOwn from 'celia.object/forOwn';
 import isPromiseLike from 'celia/isPromiseLike';
 import append from 'celia/_append';
-import forOwn from 'celia.object/forOwn';
 import assign from 'celia/assign';
 
+var isProd = process.env.NODE_ENV === 'production';
+
+/**
+ * 断言
+ *
+ * @param {Boolean} condition
+ * @param {String} msg
+ */
 function assert(condition, msg) {
   if (!condition) {
     throw new Error(("[redux-sam] " + msg));
   }
 }
 
-function getNestedState(state, path) {
+/**
+ * 根据路径获取子state
+ *
+ * @param {Sam} sam
+ * @param {Array} path
+ */
+function getNestedState(sam, path) {
+  var rootState = sam._state;
   return path.length
-    ? path.reduce(function (state, key) { return state[key]; }, state)
-    : state;
+    ? path.reduce(function (state, key) { return state[key]; }, rootState)
+    : rootState;
 }
 
-function setNestedState(rootState, path, childState) {
-  var lastIndex = path.length - 1;
-  var parentState = getNestedState(rootState, path.slice(0, lastIndex));
-  var moduleName = path[lastIndex];
-  parentState[moduleName] = childState;
+/**
+ * 根据路径设置子state
+ *
+ * @param {Sam} sam
+ * @param {Array} path
+ * @param {Object} childState
+ */
+function setNestedState(sam, path, childState) {
+  var len = path.length;
+  if (len) {
+    var lastIndex = len - 1;
+    var parentState = getNestedState(sam, path.slice(0, lastIndex));
+    var moduleName = path[lastIndex];
+    parentState[moduleName] = childState;
+  } else {
+    sam._state = childState;
+  }
+  return childState;
 }
 
-function removeNestedState(rootState, path) {
+/**
+ * 移除子state
+ *
+ * @param {Sam} sam
+ * @param {Array} path
+ */
+function removeNestedState(sam, path) {
   var lastIndex = path.length - 1;
-  var parentState = getNestedState(rootState, path.slice(0, lastIndex));
+  var parentState = getNestedState(sam, path.slice(0, lastIndex));
   var moduleName = path[lastIndex];
   delete parentState[moduleName];
 }
@@ -45,8 +79,8 @@ function unifyObjectStyle(type, payload, options) {
     type = _type;
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    assert(typeof type === 'string', ("expects string as the type, but found " + (typeof type) + "."));
+  if (!isProd) {
+    assert(isString(type), ("expects string as the type, but found " + (typeof type) + "."));
   }
 
   options = options || {};
@@ -54,233 +88,35 @@ function unifyObjectStyle(type, payload, options) {
   return { type: type, payload: payload, options: options };
 }
 
-var assertTypes = {
-  mutations: {
-    assert: function (value) { return typeof value === 'function'; },
-    expected: 'function'
-  },
-  actions: {
-    assert: function (value) { return typeof value === 'function' ||
-      (typeof value === 'object' && typeof value.handler === 'function'); },
-    expected: 'function or object with "handler" function'
-  }
-};
-
-function makeAssertionMessage(path, key, type, value, expected) {
-  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
-  if (path.length > 0) {
-    buf += " in module \"" + (path.join('.')) + "\"";
-  }
-  buf += " is " + (JSON.stringify(value)) + ".";
-  return buf;
-}
-
-function assertRawModule(path, rawModule) {
-  forOwn(assertTypes, function (assertOptions, key) {
-    // mutations 或者 actions
-    var obj = rawModule[key];
-
-    forOwn(obj, function (value, type) {
-      assert(
-        assertOptions.assert(value),
-        makeAssertionMessage(path, key, type, value, assertOptions.expected)
-      );
-    });
-  });
-}
-
-/**
- * 创建一个 redux-sam 实例用于解析state、mutations、actions和modules
- *
- * const sam = new Sam({
- *   state: { ... },
- *   mutations: { ... },
- *   actions: { ... }
- *   modules: { ... }
- * });
- *
- * const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));
- *
- */
-var Sam = function Sam(options) {
-  if ( options === void 0 ) options = {};
-
-  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
-  var sam = this;
-
-  // 内部状态
-  sam._rawRootModule = options;
-  sam._state = Object.create(null);
-  sam._actions = Object.create(null);
-  sam._actionSubscribers = [];
-  sam._mutations = Object.create(null);
-  sam._subscribers = [];
-  sam._modulesNamespaceMap = Object.create(null);
-
-  // 初始化state和子模块
-  installModule(sam, [], options);
-
-  // 执行插件
-  plugins.forEach(function (plugin) { return isFunction(plugin) && plugin(sam); });
-};
-
-var prototypeAccessors = { state: { configurable: true } };
-
-prototypeAccessors.state.get = function () {
-  return this._state;
-};
-
-prototypeAccessors.state.set = function (v) {
-  if (process.env.NODE_ENV !== 'production') {
-    assert(false, "use sam.replaceState() to explicit replace redux-sam state.");
-  }
-};
-
-/**
- * 订阅追踪state
- * @param {Function} fn
- */
-Sam.prototype.subscribe = function subscribe (fn) {
-  return genericSubscribe(fn, this._subscribers);
-};
-
-/**
- * 可以订阅action触发前后的公共处理逻辑
- * @param {Function} fn
- */
-Sam.prototype.subscribeAction = function subscribeAction (fn) {
-  return genericSubscribe(
-    isFunction(fn) ? { before: fn } : fn,
-    this._actionSubscribers
-  );
-};
-
-/**
- * 替换state，未来可能会有一些其它逻辑处理
- * @param {Object} state
- */
-Sam.prototype.replaceState = function replaceState (state) {
-  this._state = state;
-};
-
-/**
- * 动态注册state、mutations、actions和modules，可用服务端渲染
- *
- * @param {String|Array} path
- * @param {Object} rawModule
- * @param {Object} options
- */
-Sam.prototype.registerModule = function registerModule (path, rawModule, options) {
-    if ( options === void 0 ) options = {};
-
-  if (isString(path)) {
-    path = [path];
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-    assert(path.length > 0, 'cannot register the root module by using registerModule.');
-  }
-
-  installModule(
-    this,
-    path,
-    rawModule,
-    options.preserveState
-  );
-};
-
-/**
- * 动态移除已加载的模块
- *
- * @param {String|Array} path
- */
-Sam.prototype.unregisterModule = function unregisterModule (path) {
-  if (isString(path)) {
-    path = [path];
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-  }
-
-  removeNestedState(this._state, path);
-
-  resetSam(this, this._rawRootModule);
-};
-
-/**
- * 热更新时调用
- * @param {Object} newOptions
- */
-Sam.prototype.hotUpdate = function hotUpdate (newOptions) {
-  resetSam(this, newOptions);
-};
-
-Object.defineProperties( Sam.prototype, prototypeAccessors );
-
-/**
- * 构建函数中需要的函数
- *
- * @param {Sam} sam
- * @param {String} namespace
- * @param {Array} path
- */
-function makeLocalContext(sam, namespace, path) {
-  var hasNamespace = namespace !== '';
-
-  var local = {
-    dispatch: function dispatch(_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options);
-      var payload = args.payload;
-      var options = args.options;
-      var type = args.type;
-
-      if (hasNamespace && !options.root) {
-        type = namespace + type;
-        if (process.env.NODE_ENV !== 'production' && !sam._actions[type]) {
-          console.error(("[redux-sam] unknown local action type: " + (args.type) + ", global type: " + type));
-          return;
-        }
-      }
-      return sam.dispatch(type, payload, options);
-    },
-
-    commit: function commit(_type, _payload, _options) {
-      if (hasNamespace) {
-        var args = unifyObjectStyle(_type, _payload, _options);
-        var type = args.type;
-        var payload = args.payload;
-        var options = args.options;
-
-        if (!options.root) {
-          type = namespace + type;
-          if (process.env.NODE_ENV !== 'production' && !sam._mutations[type]) {
-            console.error(("[redux-sam] unknown local mutation type: " + (args.type) + ", global type: " + type));
-            return;
-          }
-        }
-        return sam.commit(type, payload, options);
-      } else {
-        return sam.commit(_type, _payload, _options);
-      }
-    },
-
-    getState: function getState() {
-      return getNestedState(sam._state, path);
-    },
-
-    setState: function setState(ret) {
-      if (isObject(ret)) {
-        path.length
-          ? setNestedState(sam._state, path, ret)
-          : (sam._state = ret);
-      }
-      return ret;
-    }
+function normalizeNamespace(fn) {
+  return function (component, map, namespace) {
+    isString(namespace)
+      ? namespace[namespace.length - 1] !== '/' && (namespace += '/')
+      : (namespace = '');
+    return fn(component, map, namespace);
   };
+}
 
-  return local;
+function normalizeMap(map, callback) {
+  return Array.isArray(map)
+    ? map.forEach(function (key) { return callback(key, key); })
+    : forOwn(map, callback);
+}
+
+/**
+ * 通过命名空间查找模块
+ *
+ * @param {Object} sam
+ * @param {String} helper
+ * @param {String} namespace
+ * @return {Object}
+ */
+function getContextByNamespace(sam, helper, namespace) {
+  var ctx = sam._contextNamespaceMap[namespace];
+  if (!isProd && !ctx) {
+    console.error(("[redux-sam] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return ctx;
 }
 
 /**
@@ -309,10 +145,70 @@ function genericSubscribe(fn, subs) {
 function resetSam(sam, newModule) {
   sam._actions = Object.create(null);
   sam._mutations = Object.create(null);
-  sam._modulesNamespaceMap = Object.create(null);
+  sam._contextNamespaceMap = Object.create(null);
 
   // 初始化模块
   installModule(sam, [], newModule, true);
+}
+
+/**
+ * 构建函数中需要的函数
+ *
+ * @param {Sam} sam
+ * @param {String} namespace
+ * @param {Array} path
+ */
+function makeLocalContext(sam, namespace, path) {
+  var hasNamespace = namespace !== '';
+
+  var local = {
+    dispatch: function dispatch(_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (hasNamespace && !options.root) {
+        type = namespace + type;
+        if (!isProd && !sam._actions[type]) {
+          console.error(("[redux-sam] unknown local action type: " + (args.type) + ", global type: " + type));
+          return;
+        }
+      }
+      return sam.dispatch(type, payload, options);
+    },
+
+    commit: function commit(_type, _payload, _options) {
+      if (hasNamespace) {
+        var args = unifyObjectStyle(_type, _payload, _options);
+        var type = args.type;
+        var payload = args.payload;
+        var options = args.options;
+
+        if (!options.root) {
+          type = namespace + type;
+          if (!isProd && !sam._mutations[type]) {
+            console.error(("[redux-sam] unknown local mutation type: " + (args.type) + ", global type: " + type));
+            return;
+          }
+        }
+        return sam.commit(type, payload, options);
+      } else {
+        return sam.commit(_type, _payload, _options);
+      }
+    },
+
+    getState: function getState() {
+      return getNestedState(sam, path);
+    },
+
+    setState: function setState(ret) {
+      isObject(ret) && setNestedState(sam, path, ret);
+      return ret;
+    }
+  };
+
+  return local;
 }
 
 /**
@@ -326,34 +222,32 @@ function resetSam(sam, newModule) {
 function installModule(sam, path, rawModule, hot) {
   var isRoot = !path.length;
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProd) {
     assertRawModule(path, rawModule);
   }
 
   var rawState = rawModule.state;
   var state = (isFunction(rawState) ? rawState() : rawState) || Object.create(null);
-
   var namespace = path.reduce(function (namespace, key) { return namespace + (rawModule.namespaced ? key + '/' : ''); }, '');
+  var local = makeLocalContext(sam, namespace, path);
 
   // 判断不是顶层模块
   if (!isRoot) {
     // 分类指定命名空间的模块
     if (rawModule.namespaced) {
-      if (sam._modulesNamespaceMap[namespace] && process.env.NODE_ENV !== 'production') {
+      if (sam._contextNamespaceMap[namespace] && !isProd) {
         console.error(("[redux-sam] duplicate namespace " + namespace + " for the namespaced module " + (path.join('/'))));
       }
-      sam._modulesNamespaceMap[namespace] = true;
+      sam._contextNamespaceMap[namespace] = local;
     }
 
     // 挂载子模块到跟模块下
     if (!hot) {
-      setNestedState(sam._state, path, state);
+      setNestedState(sam, path, state);
     }
   } else {
     sam._state = state;
   }
-
-  var local = makeLocalContext(sam, namespace, path);
 
   forOwn(rawModule.mutations, function (mutation, key) {
     var namespacedType = namespace + key;
@@ -417,6 +311,222 @@ function registerAction(sam, type, handler, ref) {
   });
 }
 
+var assertTypes = {
+  mutations: {
+    assert: function (value) { return isFunction(value); },
+    expected: 'function'
+  },
+  actions: {
+    assert: function (value) { return isFunction(value) ||
+      (isObject(value) && isFunction(value.handler)); },
+    expected: 'function or object with "handler" function'
+  }
+};
+
+function makeAssertionMessage(path, key, type, value, expected) {
+  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
+  if (path.length > 0) {
+    buf += " in module \"" + (path.join('.')) + "\"";
+  }
+  buf += " is " + (JSON.stringify(value)) + ".";
+  return buf;
+}
+
+function assertRawModule(path, rawModule) {
+  forOwn(assertTypes, function (assertOptions, key) {
+    // mutations 或者 actions
+    var obj = rawModule[key];
+
+    forOwn(obj, function (value, type) {
+      assert(
+        assertOptions.assert(value),
+        makeAssertionMessage(path, key, type, value, assertOptions.expected)
+      );
+    });
+  });
+}
+
+/**
+ * 创建一个 redux-sam 实例用于解析state、mutations、actions和modules
+ *
+ * const sam = new Sam({
+ *   state: { ... },
+ *   mutations: { ... },
+ *   actions: { ... }
+ *   modules: { ... }
+ * });
+ *
+ * const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));
+ *
+ */
+var Sam = function Sam(options) {
+  if ( options === void 0 ) options = {};
+
+  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
+  var sam = this;
+
+  // 内部状态
+  sam._rawRootModule = options;
+  sam._state = Object.create(null);
+  sam._actions = Object.create(null);
+  sam._actionSubscribers = [];
+  sam._mutations = Object.create(null);
+  sam._subscribers = [];
+  sam._contextNamespaceMap = Object.create(null);
+
+  // 初始化state和子模块
+  installModule(sam, [], options);
+
+  // 执行插件
+  plugins.forEach(function (plugin) { return isFunction(plugin) && plugin(sam); });
+};
+
+var prototypeAccessors = { state: { configurable: true } };
+
+prototypeAccessors.state.get = function () {
+  return this._state;
+};
+
+prototypeAccessors.state.set = function (v) {
+  if (!isProd) {
+    assert(false, "use sam.replaceState() to explicit replace redux-sam state.");
+  }
+};
+
+/**
+ * 订阅追踪state
+ * @param {Function} fn
+ */
+Sam.prototype.subscribe = function subscribe (fn) {
+  return genericSubscribe(fn, this._subscribers);
+};
+
+/**
+ * 可以订阅action触发前后的公共处理逻辑
+ * @param {Function} fn
+ */
+Sam.prototype.subscribeAction = function subscribeAction (fn) {
+  return genericSubscribe(
+    isFunction(fn) ? { before: fn } : fn,
+    this._actionSubscribers
+  );
+};
+
+/**
+ * 替换state，未来可能会有一些其它逻辑处理
+ * @param {Object} state
+ */
+Sam.prototype.replaceState = function replaceState (state) {
+  this._state = state;
+};
+
+/**
+ * 动态注册state、mutations、actions和modules，可用服务端渲染
+ *
+ * @param {String|Array} path
+ * @param {Object} rawModule
+ * @param {Object} options
+ */
+Sam.prototype.registerModule = function registerModule (path, rawModule, options) {
+    if ( options === void 0 ) options = {};
+
+  if (isString(path)) {
+    path = [path];
+  }
+
+  if (!isProd) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+    assert(path.length > 0, 'cannot register the root module by using registerModule.');
+  }
+
+  installModule(
+    this,
+    path,
+    rawModule,
+    options.preserveState
+  );
+};
+
+/**
+ * 动态移除已加载的模块
+ *
+ * @param {String|Array} path
+ */
+Sam.prototype.unregisterModule = function unregisterModule (path) {
+  if (isString(path)) {
+    path = [path];
+  }
+
+  if (!isProd) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+  }
+
+  removeNestedState(this, path);
+
+  resetSam(this, this._rawRootModule);
+};
+
+/**
+ * 热更新时调用
+ * @param {Object} newOptions
+ */
+Sam.prototype.hotUpdate = function hotUpdate (newOptions) {
+  resetSam(this, newOptions);
+};
+
+Object.defineProperties( Sam.prototype, prototypeAccessors );
+
+function mapMutations(sam) {
+  return normalizeNamespace(function (component, mutations, namespace) {
+    normalizeMap(mutations, function (val, key) {
+      component[key] = function mappedMutation() {
+        var args = [], len = arguments.length;
+        while ( len-- ) args[ len ] = arguments[ len ];
+
+        var commit = sam.commit;
+        if (namespace) {
+          var ctx = getContextByNamespace(sam, 'mapMutations', namespace);
+          if (!ctx) {
+            return;
+          }
+          commit = ctx.commit;
+        }
+        return isFunction(val)
+          ? val.apply(component, [commit ].concat( args))
+          : commit.apply(sam, [val ].concat( args));
+      };
+    });
+  });
+}
+function mapActions(sam) {
+  return normalizeNamespace(function (component, actions, namespace) {
+    normalizeMap(actions, function (val, key) {
+      component[key] = function mappedMutation() {
+        var args = [], len = arguments.length;
+        while ( len-- ) args[ len ] = arguments[ len ];
+
+        var dispatch = sam.dispatch;
+        if (namespace) {
+          var ctx = getContextByNamespace(sam, 'mapActions', namespace);
+          if (!ctx) {
+            return;
+          }
+          dispatch = ctx.dispatch;
+        }
+        return isFunction(val)
+          ? val.apply(component, [dispatch ].concat( args))
+          : dispatch.apply(sam, [val ].concat( args));
+      };
+    });
+  });
+}
+function createHelpers (sam) {
+  return {
+    mapMutations: mapMutations(sam),
+    mapActions: mapActions(sam)
+  };
+}
+
 /**
  * 触发action订阅
  * @param {Array} actionSubscribers 订阅回调函数集合
@@ -432,7 +542,7 @@ function triggerActionSubscribers(actionSubscribers, method, action, state) {
         fn && fn(action, state);
       });
   } catch (e) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (!isProd) {
       console.warn(("[redux-sam] error in " + method + " action subscribers: "));
       console.error(e);
     }
@@ -476,7 +586,7 @@ function middleware(sam) {
 
           var entry = _actions[type];
           if (!entry) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!isProd) {
               console.error(("[redux-sam] unknown action type: " + type));
             }
             return;
@@ -513,7 +623,7 @@ function reducer(sam) {
 
     var entry = sam._mutations[type];
     if (!entry) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (!isProd) {
         console.error(("[redux-sam] unknown mutation type: " + type));
       }
       return;
@@ -529,4 +639,4 @@ function reducer(sam) {
   };
 }
 
-export { Sam, middleware, reducer };
+export { Sam, createHelpers, middleware, reducer };

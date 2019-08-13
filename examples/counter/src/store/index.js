@@ -1,3 +1,5 @@
+import { createStore, applyMiddleware } from 'redux';
+import { Sam, reducer, middleware, createHelpers } from '../redux-sam';
 
 const state = {
   count: 0
@@ -30,10 +32,14 @@ const actions = {
   }
 }
 
-// A Vuex instance is created by combining the state, mutations, actions,
-// and getters.
-export default {
+const sam = new Sam({
   state,
   actions,
   mutations
-};
+});
+
+const { mapActions, mapMutations } = createHelpers(sam);
+
+const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));
+
+export { store, sam, mapActions, mapMutations };

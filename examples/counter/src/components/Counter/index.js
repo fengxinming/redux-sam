@@ -1,23 +1,13 @@
 import React, { PureComponent } from 'react';
-import { sam } from '../../store';
+import { mapActions } from '../../store';
 import { connect } from 'react-redux';
 
 class Counter extends PureComponent {
-  increment = () => {
-    sam.dispatch('increment');
-  };
+  constructor(props) {
+    super(props);
 
-  decrement = () => {
-    sam.dispatch('decrement');
-  };
-
-  incrementIfOdd = () => {
-    sam.dispatch('incrementIfOdd');
-  };
-
-  incrementAsync = () => {
-    sam.dispatch('incrementAsync')
-  };
+    mapActions(this, ['increment', 'decrement', 'incrementIfOdd', 'incrementAsync']);
+  }
 
   render() {
     const evenOrOdd = this.props.count % 2 === 0 ? 'even' : 'odd';

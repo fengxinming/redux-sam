@@ -1,5 +1,5 @@
 /*
- * redux-sam.js v1.0.2-beta.1
+ * redux-sam.js v1.0.2
  * (c) 2018-2019 Jesse Feng
  * Released under the MIT License.
  */

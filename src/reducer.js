@@ -1,4 +1,5 @@
 import assign from 'celia/assign';
+import { isProd } from './lib/utils';
 
 export default function reducer(sam) {
   return function (prevState, mutation) {
@@ -11,7 +12,7 @@ export default function reducer(sam) {
 
     const entry = sam._mutations[type];
     if (!entry) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (!isProd) {
         console.error(`[redux-sam] unknown mutation type: ${type}`);
       }
       return;

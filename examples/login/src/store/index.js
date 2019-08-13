@@ -1,8 +1,8 @@
 import { createStore, applyMiddleware } from 'redux';
-import { Sam, reducer, middleware } from '~/redux-sam/index';
+import { Sam, reducer, middleware } from '~/redux-sam';
 // import createSamLogger from '~/redux-sam/logger';
-import home from './models/modules/home';
-import login from './models/modules/login';
+import home from './modules/home';
+import login from './modules/login';
 
 const sam = new Sam({
   modules: {
