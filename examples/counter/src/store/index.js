@@ -1,5 +1,6 @@
-import { createStore, applyMiddleware } from 'redux';
-import { Sam, reducer, middleware, createHelpers } from '../redux-sam';
+import { createStore } from '../redux-sam';
+import { Component } from 'react';
+import createLogger from '../redux-sam/logger';
 
 const state = {
   count: 0
@@ -32,14 +33,11 @@ const actions = {
   }
 }
 
-const sam = new Sam({
+const { store } = createStore({
   state,
   actions,
-  mutations
-});
+  mutations,
+  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
+}, Component.prototype);
 
-const { mapActions, mapMutations } = createHelpers(sam);
-
-const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));
-
-export { store, sam, mapActions, mapMutations };
+export { store };

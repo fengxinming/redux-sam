@@ -15,6 +15,38 @@
 
 <span class="token keyword">const</span> store <span class="token operator">=</span> <span class="token function">createStore</span><span class="token punctuation">(</span><span class="token function">reducer</span><span class="token punctuation">(</span>sam<span class="token punctuation">)</span><span class="token punctuation">,</span> sam<span class="token punctuation">.</span>state<span class="token punctuation">,</span> <span class="token function">applyMiddleware</span><span class="token punctuation">(</span><span class="token function">middleware</span><span class="token punctuation">(</span>sam<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+<span class="token keyword">export</span> <span class="token punctuation">{</span> store<span class="token punctuation">,</span> sam <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+</code></pre>
+<h2 id="强化">强化</h2>
+<pre><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> createStore <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'redux-sam'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Component <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token punctuation">{</span> store<span class="token punctuation">,</span> sam <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">createStore</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token operator">...</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token class-name">Component</span><span class="token punctuation">.</span>prototype<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token punctuation">{</span> store<span class="token punctuation">,</span> sam <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+</code></pre>
+<pre><code class="language-js"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span> Component <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Counter</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// this.$store</span>
+    <span class="token comment">// this.$sam</span>
+    <span class="token comment">// this.$mapActions();</span>
+    <span class="token comment">// this.$mapMutations();</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token function">connect</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">state</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token punctuation">{</span> count<span class="token punctuation">:</span> state<span class="token punctuation">.</span>count <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">(</span>Counter<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
 </code></pre>
 <h2 id="sam-构造器选项">Sam 构造器选项</h2>
 <h3 id="sam-构造器选项-state">state</h3>

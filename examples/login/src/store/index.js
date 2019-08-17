@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware } from 'redux';
-import { Sam, reducer, middleware } from '~/redux-sam';
-// import createSamLogger from '~/redux-sam/logger';
+import { Sam, reducer, middleware } from '../redux-sam';
+import createSamLogger from '~/redux-sam/logger';
 import home from './modules/home';
 import login from './modules/login';
 
@@ -9,12 +9,7 @@ const sam = new Sam({
     home,
     login
   },
-  plugins: [process.env.NODE_ENV === 'development' && function (sam) {
-    import('~/redux-sam/logger').then((logger) => {
-      logger['default']()(sam);
-    });
-  }]
-  // plugins: [createSamLogger()]
+  plugins: [process.env.NODE_ENV === 'development' && createSamLogger()]
 });
 
 const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));

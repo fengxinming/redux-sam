@@ -1,12 +1,11 @@
-import React, { PureComponent } from 'react';
-import { mapActions } from '../../store';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-class Counter extends PureComponent {
+class Counter extends Component {
   constructor(props) {
     super(props);
 
-    mapActions(this, ['increment', 'decrement', 'incrementIfOdd', 'incrementAsync']);
+    this.$mapActions(['increment', 'decrement', 'incrementIfOdd', 'incrementAsync']);
   }
 
   render() {

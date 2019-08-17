@@ -54,6 +54,14 @@ function watch() {
           copy(n, resolve(counter)).then(() => {
             logger.info(`复制 ${counter} 成功`);
           });
+          const todomvc = `examples/todomvc/src/redux-sam`;
+          copy(n, resolve(todomvc)).then(() => {
+            logger.info(`复制 ${todomvc} 成功`);
+          });
+          const chat = `examples/chat/src/redux-sam`;
+          copy(n, resolve(chat)).then(() => {
+            logger.info(`复制 ${chat} 成功`);
+          });
         });
         break;
       case 'END':

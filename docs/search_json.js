@@ -2,25 +2,30 @@ window.ydoc_plugin_search_json = {
   "文档": [
     {
       "title": "redux-sam",
-      "content": "redux-sam 作为一个 Redux 中间件，让你像使用Vuex一样管理状态。\n笔者是一位 Vue 患者，从深圳来到杭州之后，发现 React 一直占据着杭州市场。最近在接手老项目过程中发现，前人对 Dva 的使用方式跟Vuex类似，除了每次在reducer最后返回新对象。笔者在思考能不能像 Vuex 一样简单而纯粹地管理状态，而不是像 Dva 一样在 redux-saga 上进行二次封装。因此，在借(chao)鉴(xi) Vuex 的代码之后，孕育出了一个 Redux 中间件 redux-sam。以下是一个表示“单向数据流”理念的简单示意：",
+      "content": "redux-sam 作为一个 Redux 中间件，让你像使用Vuex一样管理状态。\n笔者是一位 Vue 患者，希望像 Vuex 一样简单而纯粹地管理状态，而不是像 Dva 一样在 redux-saga 上进行二次封装。因此，在借(chao)鉴(xi) Vuex 源码之后，衍生出了一个 Redux 中间件 redux-sam。以下是一个表示“单向数据流”理念的简单示意：每一个 redux-sam 应用的核心就是 store（仓库）。“store”基本上就是一个容器，它包含着你的应用中大部分的状态 (state)，你不能直接改变 store 中的状态。改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation，这样使得我们可以方便地跟踪每一个状态的变化，从而让我们能够实现一些工具帮助我们更好地了解我们的应用。",
       "url": "/guide/index.html",
-      "children": []
-    },
-    {
-      "title": "安装",
-      "content": "npm install --save redux-sam\n\n或者通过 script 方式加载\n  // window.reduxSam\n  reduxSam.Sam\n  reduxSam.middleware\n  reduxSam.reducer\n\n\n\n  // window.createSamLogger\n\n\n",
-      "url": "/guide/installation.html",
-      "children": []
-    },
-    {
-      "title": "引言",
-      "content": "每一个 redux-sam 应用的核心就是 store（仓库）。“store”基本上就是一个容器，它包含着你的应用中大部分的状态 (state)，你不能直接改变 store 中的状态。改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation，这样使得我们可以方便地跟踪每一个状态的变化，从而让我们能够实现一些工具帮助我们更好地了解我们的应用。",
-      "url": "/guide/intro.html",
       "children": [
         {
           "title": "最简单的 Store",
-          "url": "/guide/intro.html#最简单的-store",
-          "content": "最简单的 Store安装 redux-sam 之后，让我们来创建一个 store。创建过程直截了当——仅需要提供一个初始 state 对象和一些 mutation：import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  }\n});\n\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\n现在，你可以通过 sam.state or store.getState() 来获取状态对象，以及通过 store.dispatch 方法触发状态变更：store.dispatch('increment')\nconsole.log(store.getState().count) // -> 1\n\n或者sam.commit('increment')\nconsole.log(sam.state.count) // -> 1\n\n再次强调，我们通过提交 mutation 的方式，而非直接改变 store.getState().count，是因为我们想要更明确地追踪到状态的变化。这个简单的约定能够让你的意图更加明显，这样你在阅读代码的时候能更容易地解读应用内部的状态改变。此外，这样也让我们有机会去实现一些能记录每次状态改变，保存状态快照的调试工具。有了它，我们甚至可以实现如时间穿梭般的调试体验。"
+          "url": "/guide/index.html#最简单的-store",
+          "content": "最简单的 Store安装 redux-sam 之后，让我们来创建一个 store。创建过程直截了当——仅需要提供一个初始 state 对象和一些 mutation：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state,\n  actions,\n  mutations,\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component.prototype);\n\nexport { store, sam };\n\n现在，你可以通过 sam.state or store.getState() 来获取状态对象，以及通过 store.dispatch 方法触发状态变更：sam.commit('increment')console.log(sam.state.count) // -> 1\n\n或者store.dispatch('increment')console.log(store.getState().count) // -> 1\n\n再次强调，我们通过提交 mutation 的方式，而非直接改变 store.getState().count，是因为我们想要更明确地追踪到状态的变化。这个简单的约定能够让你的意图更加明显，这样你在阅读代码的时候能更容易地解读应用内部的状态改变。此外，这样也让我们有机会去实现一些能记录每次状态改变，保存状态快照的调试工具。有了它，我们甚至可以实现如时间穿梭般的调试体验。"
+        }
+      ]
+    },
+    {
+      "title": "安装",
+      "content": "$ npm install --save redux react-redux redux-sam\n",
+      "url": "/guide/installation.html",
+      "children": [
+        {
+          "title": "CommonJS 方式加载",
+          "url": "/guide/installation.html#commonjs-方式加载",
+          "content": "CommonJS 方式加载import { createStore } from 'redux-sam';\nconst { store } = createStore({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n}, Component.prototype);\n\nexport { store };\n\nOrimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n});\nconst store = createStore(\n  reducer(sam), \n  sam.state, \n  applyMiddleware(middleware(sam))\n);\n\nexport { store };\n\n"
+        },
+        {
+          "title": "或者通过 script 方式加载",
+          "url": "/guide/installation.html#或者通过-script-方式加载",
+          "content": "或者通过 script 方式加载\n  // window.reduxSam\n  reduxSam.Sam\n  reduxSam.middleware\n  reduxSam.reducer\n  reduxSam.createHelpers\n  reduxSam.createStore\n\n\n\n  // window.createSamLogger\n\n\n"
         }
       ]
     },
@@ -49,18 +54,18 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "Mutation",
-      "content": "更改 redux-sam 的 state 的唯一方法是提交 mutation。redux-sam 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数：import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\nconst sam = new Sam({\n  state: {\n    count: 1\n  },\n  mutations: {\n    increment (state) {\n      // 变更状态\n      state.count++\n    }\n  }\n})\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\n你不能直接调用一个 mutation handler。这个选项更像是事件注册：“当触发一个类型为 increment 的 mutation 时，调用此函数。”要唤醒一个 mutation handler，你需要以相应的 type 调用 store.dispatch 方法：store.dispatch('increment')\n或者sam.commit('increment')\n",
+      "content": "更改 redux-sam 的 state 的唯一方法是提交 mutation。redux-sam 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state: {\n    count: 1\n  },\n  mutations: {\n    increment (state) {\n      // 变更状态\n      state.count++\n    }\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component.prototype);\n\nexport { store, sam };\n\n你不能直接调用一个 mutation handler。这个选项更像是事件注册：“当触发一个类型为 increment 的 mutation 时，调用此函数。”要唤醒一个 mutation handler，你需要以相应的 type 调用 store.dispatch 方法：sam.commit('increment')\n或者store.dispatch('increment')\n",
       "url": "/guide/mutations.html",
       "children": [
         {
           "title": "提交载荷（Payload）",
           "url": "/guide/mutations.html#提交载荷（payload）",
-          "content": "提交载荷（Payload）你可以向 store.dispatch 传入额外的参数，即 mutation 的 载荷（payload）：// ...mutations: {\n  increment (state, n) {\n    state.count += n\n  }\n}\n\nstore.dispatch('increment', 10)\n或者sam.commit('increment', 10)\n在大多数情况下，载荷应该是一个对象，这样可以包含多个字段并且记录的 mutation 会更易读：// ...mutations: {\n  increment (state, payload) {\n    state.count += payload.amount\n  }\n}\n\nstore.dispatch('increment', {  amount: 10\n})\n\n或者sam.commit('increment', {  amount: 10\n})\n\n"
+          "content": "提交载荷（Payload）你可以向 store.dispatch 传入额外的参数，即 mutation 的 载荷（payload）：// ...mutations: {\n  increment (state, n) {\n    state.count += n\n  }\n}\n\nsam.commit('increment', 10)\n或者store.dispatch('increment', 10)\n在大多数情况下，载荷应该是一个对象，这样可以包含多个字段并且记录的 mutation 会更易读：// ...mutations: {\n  increment (state, payload) {\n    state.count += payload.amount\n  }\n}\n\nsam.commit('increment', {  amount: 10\n})\n\n或者store.dispatch('increment', {  amount: 10\n})\n\n"
         },
         {
           "title": "对象风格的提交方式",
           "url": "/guide/mutations.html#对象风格的提交方式",
-          "content": "对象风格的提交方式提交 mutation 的另一种方式是直接使用包含 type 属性的对象：store.dispatch({  type: 'increment',\n  payload: {\n    amount: 10\n  }\n})\n\n或者sam.commit({  type: 'increment',\n  payload: {\n    amount: 10\n  }\n})\n\n当使用对象风格的提交方式，整个对象都作为载荷传给 mutation 函数，因此 handler 保持不变：mutations: {  increment (state, payload) {\n    state.count += payload.amount\n  }\n}\n\n"
+          "content": "对象风格的提交方式提交 mutation 的另一种方式是直接使用包含 type 属性的对象：sam.commit({  type: 'increment',\n  payload: {\n    amount: 10\n  }\n})\n\n或者store.dispatch({  type: 'increment',\n  payload: {\n    amount: 10\n  }\n})\n\n当使用对象风格的提交方式，整个对象都作为载荷传给 mutation 函数，因此 handler 保持不变：mutations: {  increment (state, payload) {\n    state.count += payload.amount\n  }\n}\n\n"
         },
         {
           "title": "使用常量替代 Mutation 事件类型",
@@ -81,13 +86,13 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "Action",
-      "content": "Action 类似于 mutation，不同在于：Action 提交的是 mutation，而不是直接变更状态。\nAction 可以包含任意异步操作。\n让我们来注册一个简单的 action：import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\nconst sam = new Sam({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  },\n  actions: {\n    increment (context) {\n      context.commit('increment')\n    }\n  }\n})\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\nAction 函数接受一个与 sam 实例具有相同方法和属性的 context 对象，因此你可以调用 context.dispatch 提交一个 mutation，或者通过 context.state 来获取 state。当我们在之后介绍到 Modules 时，你就知道 context 对象为什么不是 sam 实例本身了。实践中，我们会经常用到 ES2015 的 参数解构 来简化代码（特别是我们需要调用 dispatch 很多次的时候）：actions: {  increment ({ commit }) {\n    commit('increment')\n  }\n}\n\n",
+      "content": "Action 类似于 mutation，不同在于：Action 提交的是 mutation，而不是直接变更状态。\nAction 可以包含任意异步操作。\n让我们来注册一个简单的 action：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  },\n  actions: {\n    increment (context) {\n      context.commit('increment')\n    }\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component.prototype);\n\nexport { store, sam };\n\nAction 函数接受一个与 sam 实例具有相同方法和属性的 context 对象，因此你可以调用 context.dispatch 提交一个 mutation，或者通过 context.state 来获取 state。当我们在之后介绍到 Modules 时，你就知道 context 对象为什么不是 sam 实例本身了。实践中，我们会经常用到 ES2015 的 参数解构 来简化代码（特别是我们需要调用 dispatch 很多次的时候）：actions: {  increment ({ commit }) {\n    commit('increment')\n  }\n}\n\n",
       "url": "/guide/actions.html",
       "children": [
         {
           "title": "分发 Action",
           "url": "/guide/actions.html#分发-action",
-          "content": "分发 ActionAction 通过 sam.dispatch 方法触发：store.dispatch('increment', null, { async: true })\n或者sam.dispatch('increment')\n乍一眼看上去感觉多此一举，我们直接分发 mutation 岂不更方便？实际上并非如此，还记得 mutation 必须同步执行这个限制么？Action 就不受约束！我们可以在 action 内部执行异步操作：actions: {  incrementAsync ({ commit }) {\n    setTimeout(() => {\n      commit('increment')\n    }, 1000)\n  }\n}\n\nActions 支持同样的载荷方式和对象方式进行分发：// 以载荷形式分发store.dispatch('incrementAsync', {\n  amount: 10\n}, { async: true })\n\n// 以对象形式分发\nstore.dispatch({\n  type: 'incrementAsync',\n  payload: {\n    amount: 10\n  },\n  options: { async: true }\n})\n\n或者// 以载荷形式分发sam.dispatch('incrementAsync', {\n  amount: 10\n})\n\n// 以对象形式分发\nsam.dispatch({\n  type: 'incrementAsync',\n  payload: {\n    amount: 10\n  }\n})\n\n来看一个更加实际的购物车示例，涉及到调用异步 API 和分发多重 mutation：actions: {  checkout ({ commit, state }, products) {\n    // 把当前购物车的物品备份起来\n    const savedCartItems = [...state.cart.added]\n    // 发出结账请求，然后乐观地清空购物车\n    commit(types.CHECKOUT_REQUEST)\n    // 购物 API 接受一个成功回调和一个失败回调\n    shop.buyProducts(\n      products,\n      // 成功操作\n      () => commit(types.CHECKOUT_SUCCESS),\n      // 失败操作\n      () => commit(types.CHECKOUT_FAILURE, savedCartItems)\n    )\n  }\n}\n\n注意我们正在进行一系列的异步操作，并且通过提交 mutation 来记录 action 产生的副作用（即状态变更）。"
+          "content": "分发 ActionAction 通过 sam.dispatch 方法触发：sam.dispatch('increment')\n或者store.dispatch('increment', null, { async: true })\n乍一眼看上去感觉多此一举，我们直接分发 mutation 岂不更方便？实际上并非如此，还记得 mutation 必须同步执行这个限制么？Action 就不受约束！我们可以在 action 内部执行异步操作：actions: {  incrementAsync ({ commit }) {\n    setTimeout(() => {\n      commit('increment')\n    }, 1000)\n  }\n}\n\nActions 支持同样的载荷方式和对象方式进行分发：// 以载荷形式分发sam.dispatch('incrementAsync', {\n  amount: 10\n})\n\n// 以对象形式分发\nsam.dispatch({\n  type: 'incrementAsync',\n  payload: {\n    amount: 10\n  }\n})\n\n或者// 以载荷形式分发store.dispatch('incrementAsync', {\n  amount: 10\n}, { async: true })\n\n// 以对象形式分发\nstore.dispatch({\n  type: 'incrementAsync',\n  payload: {\n    amount: 10\n  },\n  options: { async: true }\n})\n\n来看一个更加实际的购物车示例，涉及到调用异步 API 和分发多重 mutation：actions: {  checkout ({ commit, state }, products) {\n    // 把当前购物车的物品备份起来\n    const savedCartItems = [...state.cart.added]\n    // 发出结账请求，然后乐观地清空购物车\n    commit(types.CHECKOUT_REQUEST)\n    // 购物 API 接受一个成功回调和一个失败回调\n    shop.buyProducts(\n      products,\n      // 成功操作\n      () => commit(types.CHECKOUT_SUCCESS),\n      // 失败操作\n      () => commit(types.CHECKOUT_FAILURE, savedCartItems)\n    )\n  }\n}\n\n注意我们正在进行一系列的异步操作，并且通过提交 mutation 来记录 action 产生的副作用（即状态变更）。"
         },
         {
           "title": "在组件中分发 Action",
@@ -178,7 +183,7 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "热重载",
-      "content": "使用 webpack 的 Hot Module Replacement API，redux-sam 支持在开发过程中热重载 mutation、module和action。你也可以在 Browserify 中使用 browserify-hmr 插件。对于 mutation 和模块，你需要使用 store.hotUpdate() 方法：// store.jsimport { createStore, applyMiddleware } from 'redux';\nimport { Sam, reducer, middleware } from 'redux-sam';\nimport mutations from './mutations'\nimport moduleA from './modules/a'\n\nconst state = { ... }\n\nconst sam = new Sam({\n  state,\n  mutations,\n  modules: {\n    a: moduleA\n  }\n})\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\nif (module.hot) {\n  // 使 action 和 mutation 成为可热重载模块\n  module.hot.accept(['./mutations', './modules/a'], () => {\n    // 获取更新后的模块\n    // 因为 babel 6 的模块编译格式问题，这里需要加上 `.default`\n    const newMutations = require('./mutations').default\n    const newModuleA = require('./modules/a').default\n    // 加载新模块\n    sam.hotUpdate({\n      mutations: newMutations,\n      modules: {\n        a: newModuleA\n      }\n    })\n  })\n}\n\n参考热重载示例 counter-hot。",
+      "content": "使用 webpack 的 Hot Module Replacement API，redux-sam 支持在开发过程中热重载 mutation、module和action。你也可以在 Browserify 中使用 browserify-hmr 插件。对于 mutation 和模块，你需要使用 store.hotUpdate() 方法：// store.jsimport { createStore } from 'redux-sam';\nimport { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\nimport mutations from './mutations';\nimport moduleA from './modules/a';\n\nconst state = { ... };\n\nconst { store, sam } = createStore({\n  state,\n  mutations,\n  modules: {\n    a: moduleA\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component.prototype);\n\nif (module.hot) {\n  // 使 action 和 mutation 成为可热重载模块\n  module.hot.accept(['./mutations', './modules/a'], () => {\n    // 获取更新后的模块\n    // 因为 babel 6 的模块编译格式问题，这里需要加上 `.default`\n    const newMutations = require('./mutations').default\n    const newModuleA = require('./modules/a').default\n    // 加载新模块\n    sam.hotUpdate({\n      mutations: newMutations,\n      modules: {\n        a: newModuleA\n      }\n    })\n  })\n}\n\n参考热重载示例 counter-hot。",
       "url": "/guide/hot-reload.html",
       "children": []
     }
@@ -202,7 +207,12 @@ window.ydoc_plugin_search_json = {
         {
           "title": "Sam",
           "url": "/api/index.html#sam",
-          "content": "Samimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({ ... });\n\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\n"
+          "content": "Samimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({ ... });\n\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\nexport { store, sam };\n\n"
+        },
+        {
+          "title": "强化",
+          "url": "/api/index.html#强化",
+          "content": "强化import { createStore } from 'redux-sam';import { Component } from 'react';\n\nconst { store, sam } = createStore({ ... }, Component.prototype);\n\nexport { store, sam };\n\nimport React, { Component } from 'react';\nclass Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    // this.$store\n    // this.$sam\n    // this.$mapActions();\n    // this.$mapMutations();\n  }\n\n  render() {\n    // ...\n  }\n}\n\nexport default connect((state) => ({ count: state.count }))(Counter);\n\n\n"
         },
         {
           "title": "Sam 构造器选项",

@@ -1,6 +1,6 @@
 {
   "name": "redux-sam",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "redux-sam is a middleware of Redux for managing state like Vuex.",
   "main": "./index.js",
   "module": "./es/index.js",
@@ -37,6 +37,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "fs-extra": "^7.0.1",
     "jest": "^24.0.0",
+    "redux": "^4.0.4",
     "rollup": "^1.1.2",
     "rollup-plugin-alias": "^1.5.1",
     "rollup-plugin-buble": "^0.19.6",

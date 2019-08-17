@@ -1,5 +1,5 @@
 /*
- * redux-sam.js v1.0.2
+ * redux-sam.js v1.1.0
  * (c) 2018-2019 Jesse Feng
  * Released under the MIT License.
  */
@@ -476,6 +476,17 @@ Sam.prototype.hotUpdate = function hotUpdate (newOptions) {
 
 Object.defineProperties( Sam.prototype, prototypeAccessors );
 
+/**
+ * 映射 mutations 组件的实例方法
+ *
+ * constructor(props) {
+ *   super(props);
+ *
+ *   mapMutations(this, ['increment', 'decrement']);
+ * }
+ *
+ * @param {Sam} sam
+ */
 function mapMutations(sam) {
   return normalizeNamespace(function (component, mutations, namespace) {
     normalizeMap(mutations, function (val, key) {
@@ -496,8 +507,20 @@ function mapMutations(sam) {
           : commit.apply(sam, [val ].concat( args));
       };
     });
+    return component;
   });
 }
+/**
+ * 映射 actions 组件的实例方法
+ *
+ * constructor(props) {
+ *   super(props);
+ *
+ *   mapMutations(this, ['increment', 'decrement', 'incrementIfOdd', 'incrementAsync']);
+ * }
+ *
+ * @param {Sam} sam
+ */
 function mapActions(sam) {
   return normalizeNamespace(function (component, actions, namespace) {
     normalizeMap(actions, function (val, key) {
@@ -518,12 +541,45 @@ function mapActions(sam) {
           : dispatch.apply(sam, [val ].concat( args));
       };
     });
+    return component;
   });
 }
+/**
+ * 创建公用函数
+ * @param {Object} sam
+ */
 function createHelpers (sam) {
   return {
     mapMutations: mapMutations(sam),
     mapActions: mapActions(sam)
+  };
+}
+
+function reducer(sam) {
+  return function (prevState, mutation) {
+    prevState = prevState || sam.state;
+
+    var type = mutation.type;
+    var payload = mutation.payload;
+    if (type && type.indexOf('@@redux') === 0) {
+      return prevState;
+    }
+
+    var entry = sam._mutations[type];
+    if (!entry) {
+      if (!isProd) {
+        console.error(("[redux-sam] unknown mutation type: " + type));
+      }
+      return;
+    }
+
+    // 是否需要返回一个新对象
+    var changed = entry.reduce(function (lastest, handler) { return lastest + (handler(payload) === false ? 0 : 1); }, 0);
+
+    var currentState = sam.state;
+    sam._subscribers.forEach(function (sub) { return sub(mutation, currentState); });
+
+    return changed ? assign({}, currentState) : currentState;
   };
 }
 
@@ -611,32 +667,76 @@ function middleware(sam) {
   };
 }
 
-function reducer(sam) {
-  return function (prevState, mutation) {
-    prevState = prevState || sam.state;
-
-    var type = mutation.type;
-    var payload = mutation.payload;
-    if (type && type.indexOf('@@redux') === 0) {
-      return prevState;
-    }
-
-    var entry = sam._mutations[type];
-    if (!entry) {
-      if (!isProd) {
-        console.error(("[redux-sam] unknown mutation type: " + type));
-      }
-      return;
-    }
-
-    // 是否需要返回一个新对象
-    var changed = entry.reduce(function (lastest, handler) { return lastest + (handler(payload) === false ? 0 : 1); }, 0);
-
-    var currentState = sam.state;
-    sam._subscribers.forEach(function (sub) { return sub(mutation, currentState); });
-
-    return changed ? assign({}, currentState) : currentState;
-  };
+var createStore;
+var applyMiddleware;
+if (typeof window !== 'undefined' && window.Redux) {
+  createStore = window.Redux.createStore;
+  applyMiddleware = window.Redux.applyMiddleware;
+} else {
+  try {
+    var Redux = require('redux');
+    createStore = Redux.createStore;
+    applyMiddleware = Redux.applyMiddleware;
+  } catch (e) { }
 }
 
-export { Sam, createHelpers, middleware, reducer };
+/**
+ * 创建一个 redux-sam 实例用于解析state、mutations、actions和modules
+ *
+ * const { store, sam, mapActions, mapMutations } = createStore({
+ *   state: { ... },
+ *   mutations: { ... },
+ *   actions: { ... }
+ *   modules: { ... }
+ * });
+ *
+ * export { store, sam, mapActions, mapMutations };
+ *
+ */
+function createStore$1 (options, proto) {
+  var sam = new Sam(options);
+  var store = createStore(
+    reducer(sam),
+    sam.state,
+    applyMiddleware(middleware(sam))
+  );
+  var ref = createHelpers(sam);
+  var mapActions = ref.mapActions;
+  var mapMutations = ref.mapMutations;
+
+  // 往组件上挂载自定义函数
+  if (proto) {
+    var prototypeAccessors = {
+      // 挂载store
+      $store: {
+        configurable: true,
+        get: function get() {
+          return store;
+        }
+      },
+
+      // 挂载Sam
+      $sam: {
+        configurable: true,
+        get: function get() {
+          return sam;
+        }
+      }
+    };
+    Object.defineProperties(proto, prototypeAccessors);
+
+    // 挂载 mapActions
+    proto.$mapActions = function (actions, namespace) {
+      return mapActions(this, actions, namespace);
+    };
+
+    // 挂载 mapMutations
+    proto.$mapMutations = function (mutations, namespace) {
+      return mapMutations(this, mutations, namespace);
+    };
+  }
+
+  return { store: store, sam: sam, mapActions: mapActions, mapMutations: mapMutations };
+}
+
+export { Sam, createHelpers, createStore$1 as createStore, middleware, reducer };
