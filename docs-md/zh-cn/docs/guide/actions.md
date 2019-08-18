@@ -27,7 +27,7 @@ const { store, sam } = createStore({
     }
   },
   plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
-}, Component.prototype);
+}, Component);
 
 export { store, sam };
 
@@ -138,16 +138,48 @@ actions: {
 
 ## 在组件中分发 Action
 
-你在组件中使用 this.prop.dispatch('xxx') 分发 action，
+你可以在组件中使用 `this.props.dispatch('xxx', any, { async: true })` 或者`this.$sam.dispatch('xxx')` 分发 action，
 
 ```js
-export default {
-  // ...
-  increment() {
-    this.prop.dispatch('increment')
+import React, { Component } from 'react';
+import { mapActions } from './store';
+
+export default class Counter extends Component {
+  constructor(props) {
+    super(props);
+
+    mapActions(this, [
+      'increment', // 将 `this.increment()` 映射为 `this.$sam.dispatch('increment')`
+
+      // `mapActions` 也支持载荷：
+      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$sam.dispatch('incrementBy', amount)`
+    ]);
+    mapActions(this, {
+      add: 'increment' // 将 `this.add()` 映射为 `this.$sam.dispatch('increment')`
+    })
   }
-  incrementBy(amount) {
-    this.prop.dispatch('incrementBy', amount)
+}
+
+```
+
+或者
+
+```js
+import React, { Component } from 'react';
+
+export default class Counter extends Component {
+  constructor(props) {
+    super(props);
+
+    this.$mapActions([
+      'increment', // 将 `this.increment()` 映射为 `this.$sam.dispatch('increment')`
+
+      // `mapActions` 也支持载荷：
+      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$sam.dispatch('incrementBy', amount)`
+    ]);
+    this.$mapActions({
+      add: 'increment' // 将 `this.add()` 映射为 `this.$sam.dispatch('increment')`
+    })
   }
 }
 
@@ -176,7 +208,7 @@ actions: {
 现在你可以：
 
 ```js
-store.dispatch('actionA', null, { async: true }).then(() => {
+sam.dispatch('actionA').then(() => {
   // ...
 })
 
@@ -185,7 +217,7 @@ store.dispatch('actionA', null, { async: true }).then(() => {
 或者
 
 ```js
-sam.dispatch('actionA').then(() => {
+store.dispatch('actionA', null, { async: true }).then(() => {
   // ...
 })
 

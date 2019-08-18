@@ -38,6 +38,6 @@ const { store } = createStore({
   actions,
   mutations,
   plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
-}, Component.prototype);
+}, Component);
 
 export { store };

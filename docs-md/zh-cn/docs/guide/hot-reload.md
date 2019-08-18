@@ -21,7 +21,7 @@ const { store, sam } = createStore({
     a: moduleA
   },
   plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
-}, Component.prototype);
+}, Component);
 
 if (module.hot) {
   // 使 action 和 mutation 成为可热重载模块

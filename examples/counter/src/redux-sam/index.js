@@ -667,6 +667,53 @@ function middleware(sam) {
   };
 }
 
+/**
+ * 安装组件实例方法和对象
+ *
+ * @param {Object|Function} proto
+ * @param {Object} store, sam, mapActions, mapMutations
+ */
+function install (proto, ref) {
+  var store = ref.store;
+  var sam = ref.sam;
+  var mapActions = ref.mapActions;
+  var mapMutations = ref.mapMutations;
+
+  if (isFunction(proto)) {
+    proto = proto.prototype;
+  }
+  if (isObject(proto)) {
+    var prototypeAccessors = {
+      // 挂载store
+      $store: {
+        configurable: true,
+        get: function get() {
+          return store;
+        }
+      },
+
+      // 挂载Sam
+      $sam: {
+        configurable: true,
+        get: function get() {
+          return sam;
+        }
+      }
+    };
+    Object.defineProperties(proto, prototypeAccessors);
+
+    // 挂载 mapActions
+    proto.$mapActions = function (actions, namespace) {
+      return mapActions(this, actions, namespace);
+    };
+
+    // 挂载 mapMutations
+    proto.$mapMutations = function (mutations, namespace) {
+      return mapMutations(this, mutations, namespace);
+    };
+  }
+}
+
 var createStore;
 var applyMiddleware;
 if (typeof window !== 'undefined' && window.Redux) {
@@ -703,40 +750,12 @@ function createStore$1 (options, proto) {
   var ref = createHelpers(sam);
   var mapActions = ref.mapActions;
   var mapMutations = ref.mapMutations;
+  var ret = { store: store, sam: sam, mapActions: mapActions, mapMutations: mapMutations };
 
   // 往组件上挂载自定义函数
-  if (proto) {
-    var prototypeAccessors = {
-      // 挂载store
-      $store: {
-        configurable: true,
-        get: function get() {
-          return store;
-        }
-      },
+  install(proto, ret);
 
-      // 挂载Sam
-      $sam: {
-        configurable: true,
-        get: function get() {
-          return sam;
-        }
-      }
-    };
-    Object.defineProperties(proto, prototypeAccessors);
-
-    // 挂载 mapActions
-    proto.$mapActions = function (actions, namespace) {
-      return mapActions(this, actions, namespace);
-    };
-
-    // 挂载 mapMutations
-    proto.$mapMutations = function (mutations, namespace) {
-      return mapMutations(this, mutations, namespace);
-    };
-  }
-
-  return { store: store, sam: sam, mapActions: mapActions, mapMutations: mapMutations };
+  return ret;
 }
 
-export { Sam, createHelpers, createStore$1 as createStore, middleware, reducer };
+export { Sam, createHelpers, createStore$1 as createStore, install, middleware, reducer };

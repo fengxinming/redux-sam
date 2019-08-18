@@ -1,5 +1,5 @@
 window.ydoc_plugin_search_json = {
-  "文档": [
+  "指南": [
     {
       "title": "redux-sam",
       "content": "redux-sam 作为一个 Redux 中间件，让你像使用Vuex一样管理状态。\n笔者是一位 Vue 患者，希望像 Vuex 一样简单而纯粹地管理状态，而不是像 Dva 一样在 redux-saga 上进行二次封装。因此，在借(chao)鉴(xi) Vuex 源码之后，衍生出了一个 Redux 中间件 redux-sam。以下是一个表示“单向数据流”理念的简单示意：每一个 redux-sam 应用的核心就是 store（仓库）。“store”基本上就是一个容器，它包含着你的应用中大部分的状态 (state)，你不能直接改变 store 中的状态。改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation，这样使得我们可以方便地跟踪每一个状态的变化，从而让我们能够实现一些工具帮助我们更好地了解我们的应用。",
@@ -8,7 +8,7 @@ window.ydoc_plugin_search_json = {
         {
           "title": "最简单的 Store",
           "url": "/guide/index.html#最简单的-store",
-          "content": "最简单的 Store安装 redux-sam 之后，让我们来创建一个 store。创建过程直截了当——仅需要提供一个初始 state 对象和一些 mutation：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state,\n  actions,\n  mutations,\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component.prototype);\n\nexport { store, sam };\n\n现在，你可以通过 sam.state or store.getState() 来获取状态对象，以及通过 store.dispatch 方法触发状态变更：sam.commit('increment')console.log(sam.state.count) // -> 1\n\n或者store.dispatch('increment')console.log(store.getState().count) // -> 1\n\n再次强调，我们通过提交 mutation 的方式，而非直接改变 store.getState().count，是因为我们想要更明确地追踪到状态的变化。这个简单的约定能够让你的意图更加明显，这样你在阅读代码的时候能更容易地解读应用内部的状态改变。此外，这样也让我们有机会去实现一些能记录每次状态改变，保存状态快照的调试工具。有了它，我们甚至可以实现如时间穿梭般的调试体验。"
+          "content": "最简单的 Store安装 redux-sam 之后，让我们来创建一个 store。创建过程直截了当——仅需要提供一个初始 state 对象和一些 mutation：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state,\n  actions,\n  mutations,\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component);\n\nexport { store, sam };\n\n现在，你可以通过 sam.state or store.getState() 来获取状态对象，以及通过 store.dispatch 方法触发状态变更：sam.commit('increment')console.log(sam.state.count) // -> 1\n\n或者store.dispatch('increment')console.log(store.getState().count) // -> 1\n\n再次强调，我们通过提交 mutation 的方式，而非直接改变 store.getState().count，是因为我们想要更明确地追踪到状态的变化。这个简单的约定能够让你的意图更加明显，这样你在阅读代码的时候能更容易地解读应用内部的状态改变。此外，这样也让我们有机会去实现一些能记录每次状态改变，保存状态快照的调试工具。有了它，我们甚至可以实现如时间穿梭般的调试体验。"
         }
       ]
     },
@@ -20,7 +20,7 @@ window.ydoc_plugin_search_json = {
         {
           "title": "CommonJS 方式加载",
           "url": "/guide/installation.html#commonjs-方式加载",
-          "content": "CommonJS 方式加载import { createStore } from 'redux-sam';\nconst { store } = createStore({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n}, Component.prototype);\n\nexport { store };\n\nOrimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n});\nconst store = createStore(\n  reducer(sam), \n  sam.state, \n  applyMiddleware(middleware(sam))\n);\n\nexport { store };\n\n"
+          "content": "CommonJS 方式加载import { createStore } from 'redux-sam';\nconst { store } = createStore({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n}, Component);\n\nexport { store };\n\nOrimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n});\nconst store = createStore(\n  reducer(sam), \n  sam.state, \n  applyMiddleware(middleware(sam))\n);\n\nexport { store };\n\n"
         },
         {
           "title": "或者通过 script 方式加载",
@@ -54,7 +54,7 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "Mutation",
-      "content": "更改 redux-sam 的 state 的唯一方法是提交 mutation。redux-sam 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state: {\n    count: 1\n  },\n  mutations: {\n    increment (state) {\n      // 变更状态\n      state.count++\n    }\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component.prototype);\n\nexport { store, sam };\n\n你不能直接调用一个 mutation handler。这个选项更像是事件注册：“当触发一个类型为 increment 的 mutation 时，调用此函数。”要唤醒一个 mutation handler，你需要以相应的 type 调用 store.dispatch 方法：sam.commit('increment')\n或者store.dispatch('increment')\n",
+      "content": "更改 redux-sam 的 state 的唯一方法是提交 mutation。redux-sam 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state: {\n    count: 1\n  },\n  mutations: {\n    increment (state) {\n      // 变更状态\n      state.count++\n    }\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component);\n\nexport { store, sam };\n\n你不能直接调用一个 mutation handler。这个选项更像是事件注册：“当触发一个类型为 increment 的 mutation 时，调用此函数。”要唤醒一个 mutation handler，你需要以相应的 type 调用 store.dispatch 方法：sam.commit('increment')\n或者store.dispatch('increment')\n",
       "url": "/guide/mutations.html",
       "children": [
         {
@@ -78,6 +78,11 @@ window.ydoc_plugin_search_json = {
           "content": "Mutation 必须是同步函数一条重要的原则就是要记住 mutation 必须是同步函数。为什么？请参考下面的例子：mutations: {  someMutation (state) {\n    api.callAsyncMethod(() => {\n      state.count++\n    })\n  }\n}\n\n"
         },
         {
+          "title": "在组件中提交 Mutation",
+          "url": "/guide/mutations.html#在组件中提交-mutation",
+          "content": "在组件中提交 Mutation你可以在组件中使用 this.props.dispatch('xxx') 或者this.$sam.commit('xxx') 提交 mutation，或者使用 mapMutations 辅助函数将组件中的 methods 映射为 store.commit 调用（需要在根节点注入 store）。import React, { Component } from 'react';import { mapActions } from './store';\n\nexport default class Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    mapActions(this, [\n      'increment', // 将 `this.increment()` 映射为 `this.$sam.commit('increment')`\n\n      // `mapActions` 也支持载荷：\n      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$sam.commit('incrementBy', amount)`\n    ]);\n    mapActions(this, {\n      add: 'increment' // 将 `this.add()` 映射为 `this.$sam.commit('increment')`\n    })\n  }\n}\n\n或者import React, { Component } from 'react';\nexport default class Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    this.$mapActions([\n      'increment', // 将 `this.increment()` 映射为 `this.$sam.commit('increment')`\n\n      // `mapActions` 也支持载荷：\n      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$sam.commit('incrementBy', amount)`\n    ]);\n    this.$mapActions({\n      add: 'increment' // 将 `this.add()` 映射为 `this.$sam.commit('increment')`\n    })\n  }\n}\n\n"
+        },
+        {
           "title": "下一步：Action",
           "url": "/guide/mutations.html#下一步：action",
           "content": "下一步：Action在 mutation 中混合异步调用会导致你的程序很难调试。例如，当你调用了两个包含异步回调的 mutation 来改变状态，你怎么知道什么时候回调和哪个先回调呢？这就是为什么我们要区分这两个概念。在 redux-sam 中，mutation 都是同步事务：store.dispatch('increment') // or sam.commit('increment')// 任何由 \"increment\" 导致的状态变更都应该在此刻完成。\n\n为了处理异步操作，让我们来看一看 Action。"
@@ -86,7 +91,7 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "Action",
-      "content": "Action 类似于 mutation，不同在于：Action 提交的是 mutation，而不是直接变更状态。\nAction 可以包含任意异步操作。\n让我们来注册一个简单的 action：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  },\n  actions: {\n    increment (context) {\n      context.commit('increment')\n    }\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component.prototype);\n\nexport { store, sam };\n\nAction 函数接受一个与 sam 实例具有相同方法和属性的 context 对象，因此你可以调用 context.dispatch 提交一个 mutation，或者通过 context.state 来获取 state。当我们在之后介绍到 Modules 时，你就知道 context 对象为什么不是 sam 实例本身了。实践中，我们会经常用到 ES2015 的 参数解构 来简化代码（特别是我们需要调用 dispatch 很多次的时候）：actions: {  increment ({ commit }) {\n    commit('increment')\n  }\n}\n\n",
+      "content": "Action 类似于 mutation，不同在于：Action 提交的是 mutation，而不是直接变更状态。\nAction 可以包含任意异步操作。\n让我们来注册一个简单的 action：import { createStore } from 'redux-sam';import { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\n\nconst { store, sam } = createStore({\n  state: {\n    count: 0\n  },\n  mutations: {\n    increment (state) {\n      state.count++\n    }\n  },\n  actions: {\n    increment (context) {\n      context.commit('increment')\n    }\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component);\n\nexport { store, sam };\n\nAction 函数接受一个与 sam 实例具有相同方法和属性的 context 对象，因此你可以调用 context.dispatch 提交一个 mutation，或者通过 context.state 来获取 state。当我们在之后介绍到 Modules 时，你就知道 context 对象为什么不是 sam 实例本身了。实践中，我们会经常用到 ES2015 的 参数解构 来简化代码（特别是我们需要调用 dispatch 很多次的时候）：actions: {  increment ({ commit }) {\n    commit('increment')\n  }\n}\n\n",
       "url": "/guide/actions.html",
       "children": [
         {
@@ -97,12 +102,12 @@ window.ydoc_plugin_search_json = {
         {
           "title": "在组件中分发 Action",
           "url": "/guide/actions.html#在组件中分发-action",
-          "content": "在组件中分发 Action你在组件中使用 this.prop.dispatch('xxx') 分发 action，export default {  // ...\n  increment() {\n    this.prop.dispatch('increment')\n  }\n  incrementBy(amount) {\n    this.prop.dispatch('incrementBy', amount)\n  }\n}\n\n"
+          "content": "在组件中分发 Action你可以在组件中使用 this.props.dispatch('xxx', any, { async: true }) 或者this.$sam.dispatch('xxx') 分发 action，import React, { Component } from 'react';import { mapActions } from './store';\n\nexport default class Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    mapActions(this, [\n      'increment', // 将 `this.increment()` 映射为 `this.$sam.dispatch('increment')`\n\n      // `mapActions` 也支持载荷：\n      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$sam.dispatch('incrementBy', amount)`\n    ]);\n    mapActions(this, {\n      add: 'increment' // 将 `this.add()` 映射为 `this.$sam.dispatch('increment')`\n    })\n  }\n}\n\n或者import React, { Component } from 'react';\nexport default class Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    this.$mapActions([\n      'increment', // 将 `this.increment()` 映射为 `this.$sam.dispatch('increment')`\n\n      // `mapActions` 也支持载荷：\n      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$sam.dispatch('incrementBy', amount)`\n    ]);\n    this.$mapActions({\n      add: 'increment' // 将 `this.add()` 映射为 `this.$sam.dispatch('increment')`\n    })\n  }\n}\n\n"
         },
         {
           "title": "组合 Action",
           "url": "/guide/actions.html#组合-action",
-          "content": "组合 ActionAction 通常是异步的，那么如何知道 action 什么时候结束呢？更重要的是，我们如何才能组合多个 action，以处理更加复杂的异步流程？首先，你需要明白 store.dispatch 可以处理被触发的 action 的处理函数返回的 Promise，并且 store.dispatch 仍旧返回 Promise：actions: {  actionA ({ dispatch }) {\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        dispatch('someMutation')\n        resolve()\n      }, 1000)\n    })\n  }\n}\n\n现在你可以：store.dispatch('actionA', null, { async: true }).then(() => {  // ...\n})\n\n或者sam.dispatch('actionA').then(() => {  // ...\n})\n\n在另外一个 action 中也可以：actions: {  // ...\n  actionB ({ dispatch, commit }) {\n    return dispatch('actionA').then(() => {\n      commit('someOtherMutation')\n    })\n  }\n}\n\n最后，如果我们利用 async / await，我们可以如下组合 action：// 假设 getData() 和 getOtherData() 返回的是 Promise\nactions: {\n  async actionA ({ commit }) {\n    commit('gotData', await getData())\n  },\n  async actionB ({ dispatch, commit }) {\n    await dispatch('actionA', null, { async: true }) // 等待 actionA 完成\n    commit('gotOtherData', await getOtherData())\n  }\n}\n\n一个 store.dispatch 在不同模块中可以触发多个 action 函数。在这种情况下，只有当所有触发函数完成后，返回的 Promise 才会执行。\n"
+          "content": "组合 ActionAction 通常是异步的，那么如何知道 action 什么时候结束呢？更重要的是，我们如何才能组合多个 action，以处理更加复杂的异步流程？首先，你需要明白 store.dispatch 可以处理被触发的 action 的处理函数返回的 Promise，并且 store.dispatch 仍旧返回 Promise：actions: {  actionA ({ dispatch }) {\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        dispatch('someMutation')\n        resolve()\n      }, 1000)\n    })\n  }\n}\n\n现在你可以：sam.dispatch('actionA').then(() => {  // ...\n})\n\n或者store.dispatch('actionA', null, { async: true }).then(() => {  // ...\n})\n\n在另外一个 action 中也可以：actions: {  // ...\n  actionB ({ dispatch, commit }) {\n    return dispatch('actionA').then(() => {\n      commit('someOtherMutation')\n    })\n  }\n}\n\n最后，如果我们利用 async / await，我们可以如下组合 action：// 假设 getData() 和 getOtherData() 返回的是 Promise\nactions: {\n  async actionA ({ commit }) {\n    commit('gotData', await getData())\n  },\n  async actionB ({ dispatch, commit }) {\n    await dispatch('actionA', null, { async: true }) // 等待 actionA 完成\n    commit('gotOtherData', await getOtherData())\n  }\n}\n\n一个 store.dispatch 在不同模块中可以触发多个 action 函数。在这种情况下，只有当所有触发函数完成后，返回的 Promise 才会执行。\n"
         }
       ]
     },
@@ -130,6 +135,11 @@ window.ydoc_plugin_search_json = {
           "title": "在带命名空间的模块注册全局 action",
           "url": "/guide/modules.html#命名空间-在带命名空间的模块注册全局-action",
           "content": "在带命名空间的模块注册全局 action若需要在带命名空间的模块注册全局 action，你可添加 root: true，并将这个 action 的定义放在函数 handler 中。例如：{  actions: {\n    someOtherAction ({dispatch}) {\n      dispatch('someAction')\n    }\n  },\n  modules: {\n    foo: {\n      namespaced: true,\n\n      actions: {\n        someAction: {\n          root: true,\n          handler (namespacedContext, payload) { ... } // -> 'someAction'\n        }\n      }\n    }\n  }\n}\n\n"
+        },
+        {
+          "title": "带命名空间的绑定函数",
+          "url": "/guide/modules.html#命名空间-带命名空间的绑定函数",
+          "content": "带命名空间的绑定函数当使用 mapActions 和 mapMutations 这些函数来绑定带命名空间的模块时，写起来可能比较繁琐：import React, { Component } from 'react';import { mapActions } from './store';\n\nclass Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    mapActions(this, [\n      'some/nested/module/foo', // -> this['some/nested/module/foo']()\n      'some/nested/module/bar' // -> this['some/nested/module/bar']()\n    ]);\n\n    // Or\n    this.$mapActions([\n      'some/nested/module/foo', // -> this['some/nested/module/foo']()\n      'some/nested/module/bar' // -> this['some/nested/module/bar']()\n    ]);\n  }\n\n  render() {\n    // ...\n  }\n}\n\n对于这种情况，你可以将模块的空间名称字符串作为最后一个参数传递给上述函数，这样所有绑定都会自动将该模块作为上下文。于是上面的例子可以简化为：import React, { Component } from 'react';import { mapActions } from './store';\n\nclass Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    mapActions(this, [\n      'foo', // -> this.foo()\n      'bar' // -> this.bar()\n    ], 'some/nested/module');\n\n    // Or\n    this.$mapActions([\n      'foo', // -> this.foo()\n      'bar' // -> this.bar()\n    ], 'some/nested/module');\n  }\n\n  render() {\n    // ...\n  }\n}\n\n"
         },
         {
           "title": "给插件开发者的注意事项",
@@ -183,8 +193,14 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "热重载",
-      "content": "使用 webpack 的 Hot Module Replacement API，redux-sam 支持在开发过程中热重载 mutation、module和action。你也可以在 Browserify 中使用 browserify-hmr 插件。对于 mutation 和模块，你需要使用 store.hotUpdate() 方法：// store.jsimport { createStore } from 'redux-sam';\nimport { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\nimport mutations from './mutations';\nimport moduleA from './modules/a';\n\nconst state = { ... };\n\nconst { store, sam } = createStore({\n  state,\n  mutations,\n  modules: {\n    a: moduleA\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component.prototype);\n\nif (module.hot) {\n  // 使 action 和 mutation 成为可热重载模块\n  module.hot.accept(['./mutations', './modules/a'], () => {\n    // 获取更新后的模块\n    // 因为 babel 6 的模块编译格式问题，这里需要加上 `.default`\n    const newMutations = require('./mutations').default\n    const newModuleA = require('./modules/a').default\n    // 加载新模块\n    sam.hotUpdate({\n      mutations: newMutations,\n      modules: {\n        a: newModuleA\n      }\n    })\n  })\n}\n\n参考热重载示例 counter-hot。",
+      "content": "使用 webpack 的 Hot Module Replacement API，redux-sam 支持在开发过程中热重载 mutation、module和action。你也可以在 Browserify 中使用 browserify-hmr 插件。对于 mutation 和模块，你需要使用 store.hotUpdate() 方法：// store.jsimport { createStore } from 'redux-sam';\nimport { Component } from 'react';\nimport createLogger from 'redux-sam/logger';\nimport mutations from './mutations';\nimport moduleA from './modules/a';\n\nconst state = { ... };\n\nconst { store, sam } = createStore({\n  state,\n  mutations,\n  modules: {\n    a: moduleA\n  },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component);\n\nif (module.hot) {\n  // 使 action 和 mutation 成为可热重载模块\n  module.hot.accept(['./mutations', './modules/a'], () => {\n    // 获取更新后的模块\n    // 因为 babel 6 的模块编译格式问题，这里需要加上 `.default`\n    const newMutations = require('./mutations').default\n    const newModuleA = require('./modules/a').default\n    // 加载新模块\n    sam.hotUpdate({\n      mutations: newMutations,\n      modules: {\n        a: newModuleA\n      }\n    })\n  })\n}\n\n参考热重载示例 counter-hot。",
       "url": "/guide/hot-reload.html",
+      "children": []
+    },
+    {
+      "title": "代码示例",
+      "content": "chat\ncounter\ncounter-hot\nlogin\nshopping-cart\ntodomvc\n",
+      "url": "/guide/examples.html",
       "children": []
     }
   ],
@@ -197,12 +213,32 @@ window.ydoc_plugin_search_json = {
         {
           "title": "reducer",
           "url": "/api/index.html#reducer",
-          "content": "reducer调用 createStore 时传入的第一个参数，该函数主要用于调度指定的 mutation。"
+          "content": "reducer调用 Redux.createStore 时传入的第一个参数，该函数主要用于调度指定的 mutation。"
         },
         {
           "title": "middleware",
           "url": "/api/index.html#middleware",
-          "content": "middleware调用 createStore 时传入的第三个参数，该函数主要用于调度指定的 action。"
+          "content": "middleware调用 Redux.createStore 时传入的第三个参数，该函数主要用于调度指定的 action。"
+        },
+        {
+          "title": "createHelpers",
+          "url": "/api/index.html#createhelpers",
+          "content": "createHelpers返回两个辅助函数 mapMutations 和 mapActions。const { mapActions, mapMutations } = createHelpers(sam);\n"
+        },
+        {
+          "title": "mapActions",
+          "url": "/api/index.html#createhelpers-mapactions",
+          "content": "mapActions映射 actions 到 React 组件上作为实例方法"
+        },
+        {
+          "title": "mapMutations",
+          "url": "/api/index.html#createhelpers-mapmutations",
+          "content": "mapMutations映射 mutations 到 React 组件上作为实例方法"
+        },
+        {
+          "title": "install",
+          "url": "/api/index.html#install",
+          "content": "install安装 store、sam、mapMutations 和 mapActions 到 React 组件实例上install(Component, { store, sam, mapActions, mapMutations });\n"
         },
         {
           "title": "Sam",
@@ -210,9 +246,9 @@ window.ydoc_plugin_search_json = {
           "content": "Samimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({ ... });\n\nconst store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));\n\nexport { store, sam };\n\n"
         },
         {
-          "title": "强化",
-          "url": "/api/index.html#强化",
-          "content": "强化import { createStore } from 'redux-sam';import { Component } from 'react';\n\nconst { store, sam } = createStore({ ... }, Component.prototype);\n\nexport { store, sam };\n\nimport React, { Component } from 'react';\nclass Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    // this.$store\n    // this.$sam\n    // this.$mapActions();\n    // this.$mapMutations();\n  }\n\n  render() {\n    // ...\n  }\n}\n\nexport default connect((state) => ({ count: state.count }))(Counter);\n\n\n"
+          "title": "createStore",
+          "url": "/api/index.html#createstore",
+          "content": "createStoreimport { createStore } from 'redux-sam';import { Component } from 'react';\n\nconst { store, sam } = createStore({ ... }, Component);\n\nexport { store, sam };\n\nimport React, { Component } from 'react';\nclass Counter extends Component {\n  constructor(props) {\n    super(props);\n\n    // this.$store redux实例\n    // this.$sam sam实例\n    // this.$mapActions(); action辅助函数\n    // this.$mapMutations(); mutation辅助函数\n  }\n\n  render() {\n    // ...\n  }\n}\n\n"
         },
         {
           "title": "Sam 构造器选项",
@@ -298,6 +334,21 @@ window.ydoc_plugin_search_json = {
           "title": "hotUpdate",
           "url": "/api/index.html#sam-实例方法-hotupdate",
           "content": "hotUpdate\nhotUpdate(newOptions: Object)\n热替换新的 action 和 mutation。详细介绍\n\n"
+        },
+        {
+          "title": "组件绑定的辅助函数",
+          "url": "/api/index.html#组件绑定的辅助函数",
+          "content": "组件绑定的辅助函数"
+        },
+        {
+          "title": "mapActions",
+          "url": "/api/index.html#组件绑定的辅助函数-mapactions",
+          "content": "mapActions\nmapActions(comp: Object, map: Array | Object, namespace?: string): Object\n\n\nthis.$mapActions(map: Array | Object, namespace?: string): Object\n\n创建组件方法分发 action。详细介绍最后一个参数是可选的，可以是一个命名空间字符串。详细介绍对象形式的第二个参数的成员可以是一个函数。function(dispatch: function, ...args: any[])"
+        },
+        {
+          "title": "mapMutations",
+          "url": "/api/index.html#组件绑定的辅助函数-mapmutations",
+          "content": "mapMutations\nmapMutations(comp: Object, map: Array | Object, namespace?: string): Object\n\n\nthis.$mapMutations(map: Array | Object, namespace?: string): Object\n\n创建组件方法提交 mutation。详细介绍最后一个参数是可选的，可以是一个命名空间字符串。详细介绍对象形式的第二个参数的成员可以是一个函数。function(commit: function, ...args: any[])"
         }
       ]
     }

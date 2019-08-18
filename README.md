@@ -31,7 +31,7 @@ const { store } = createStore({
   mutations: { ... },
   actions: { ... }
   modules: { ... }
-}, Component.prototype);
+}, Component);
 
 export { store };
 
@@ -88,7 +88,9 @@ export { store };
 
   - [chat](examples/chat)
   - [counter](examples/counter)
+  - [counter-hot](examples/counter-hot)
   - [login](examples/login)
+  - [shopping-cart](examples/shopping-cart)
   - [todomvc](examples/todomvc)
 
 Running the examples:

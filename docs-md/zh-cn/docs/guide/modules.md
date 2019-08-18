@@ -164,6 +164,66 @@ modules: {
 
 ```
 
+### 带命名空间的绑定函数
+
+当使用 `mapActions` 和 `mapMutations` 这些函数来绑定带命名空间的模块时，写起来可能比较繁琐：
+
+```js
+import React, { Component } from 'react';
+import { mapActions } from './store';
+
+class Counter extends Component {
+  constructor(props) {
+    super(props);
+
+    mapActions(this, [
+      'some/nested/module/foo', // -> this['some/nested/module/foo']()
+      'some/nested/module/bar' // -> this['some/nested/module/bar']()
+    ]);
+
+    // Or
+    this.$mapActions([
+      'some/nested/module/foo', // -> this['some/nested/module/foo']()
+      'some/nested/module/bar' // -> this['some/nested/module/bar']()
+    ]);
+  }
+
+  render() {
+    // ...
+  }
+}
+
+```
+
+对于这种情况，你可以将模块的空间名称字符串作为最后一个参数传递给上述函数，这样所有绑定都会自动将该模块作为上下文。于是上面的例子可以简化为：
+
+```js
+import React, { Component } from 'react';
+import { mapActions } from './store';
+
+class Counter extends Component {
+  constructor(props) {
+    super(props);
+
+    mapActions(this, [
+      'foo', // -> this.foo()
+      'bar' // -> this.bar()
+    ], 'some/nested/module');
+
+    // Or
+    this.$mapActions([
+      'foo', // -> this.foo()
+      'bar' // -> this.bar()
+    ], 'some/nested/module');
+  }
+
+  render() {
+    // ...
+  }
+}
+
+```
+
 ### 给插件开发者的注意事项
 
 如果你开发的[插件（Plugin）](#plugins)提供了模块并允许用户将其添加到 redux-sam ，可能需要考虑模块的空间名称问题。对于这种情况，你可以通过插件的参数对象来允许用户指定空间名称：

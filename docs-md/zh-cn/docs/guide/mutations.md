@@ -18,7 +18,7 @@ const { store, sam } = createStore({
     }
   },
   plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
-}, Component.prototype);
+}, Component);
 
 export { store, sam };
 
@@ -167,6 +167,56 @@ mutations: {
   someMutation (state) {
     api.callAsyncMethod(() => {
       state.count++
+    })
+  }
+}
+
+```
+
+## 在组件中提交 Mutation
+
+你可以在组件中使用 `this.props.dispatch('xxx')` 或者`this.$sam.commit('xxx')` 提交 mutation，或者使用 `mapMutations` 辅助函数将组件中的 methods 映射为 `store.commit` 调用（需要在根节点注入 `store`）。
+
+
+```js
+import React, { Component } from 'react';
+import { mapActions } from './store';
+
+export default class Counter extends Component {
+  constructor(props) {
+    super(props);
+
+    mapActions(this, [
+      'increment', // 将 `this.increment()` 映射为 `this.$sam.commit('increment')`
+
+      // `mapActions` 也支持载荷：
+      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$sam.commit('incrementBy', amount)`
+    ]);
+    mapActions(this, {
+      add: 'increment' // 将 `this.add()` 映射为 `this.$sam.commit('increment')`
+    })
+  }
+}
+
+```
+
+或者
+
+```js
+import React, { Component } from 'react';
+
+export default class Counter extends Component {
+  constructor(props) {
+    super(props);
+
+    this.$mapActions([
+      'increment', // 将 `this.increment()` 映射为 `this.$sam.commit('increment')`
+
+      // `mapActions` 也支持载荷：
+      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$sam.commit('incrementBy', amount)`
+    ]);
+    this.$mapActions({
+      add: 'increment' // 将 `this.add()` 映射为 `this.$sam.commit('increment')`
     })
   }
 }

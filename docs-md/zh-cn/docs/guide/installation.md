@@ -15,7 +15,7 @@ const { store } = createStore({
   mutations: { ... },
   actions: { ... }
   modules: { ... }
-}, Component.prototype);
+}, Component);
 
 export { store };
 

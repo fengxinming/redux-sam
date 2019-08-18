@@ -2,6 +2,7 @@ import reducer from './reducer';
 import middleware from './middleware';
 import Sam from './Sam';
 import createHelpers from './createHelpers';
+import install from './install';
 
 let createStore;
 let applyMiddleware;
@@ -37,38 +38,10 @@ export default function (options, proto) {
     applyMiddleware(middleware(sam))
   );
   const { mapActions, mapMutations } = createHelpers(sam);
+  const ret = { store, sam, mapActions, mapMutations };
 
   // 往组件上挂载自定义函数
-  if (proto) {
-    const prototypeAccessors = {
-      // 挂载store
-      $store: {
-        configurable: true,
-        get() {
-          return store;
-        }
-      },
+  install(proto, ret);
 
-      // 挂载Sam
-      $sam: {
-        configurable: true,
-        get() {
-          return sam;
-        }
-      }
-    };
-    Object.defineProperties(proto, prototypeAccessors);
-
-    // 挂载 mapActions
-    proto.$mapActions = function (actions, namespace) {
-      return mapActions(this, actions, namespace);
-    };
-
-    // 挂载 mapMutations
-    proto.$mapMutations = function (mutations, namespace) {
-      return mapMutations(this, mutations, namespace);
-    };
-  }
-
-  return { store, sam, mapActions, mapMutations };
+  return ret;
 };

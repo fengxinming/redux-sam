@@ -36,7 +36,7 @@ const { store, sam, mapActions, mapMutations } = createStore({
   actions,
   mutations,
   plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
-}, Component.prototype);
+}, Component);
 
 // 默认获取所有消息
 sam.dispatch('getAllMessages');
