@@ -1,7 +1,7 @@
 # 安装
 
 ```bash
-$ npm install --save redux react-redux redux-sam
+$ npm install --save redux redux-sam react-redux
 
 ```
 
@@ -21,7 +21,7 @@ export { store };
 
 ```
 
-Or
+或者
 
 ```js
 import { createStore, applyMiddleware } from 'redux';

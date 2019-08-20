@@ -17,7 +17,7 @@
 ## Installation
 
 ```bash
-$ npm install --save redux react-redux redux-sam
+$ npm install --save redux redux-sam react-redux
 
 ```
 

@@ -7,7 +7,8 @@
     "it": true,
     "expect": true,
     "beforeAll": true,
-    "afterAll": true
+    "afterAll": true,
+    "__VERSION__": true
   },
   "rules": {
     "arrow-parens": [

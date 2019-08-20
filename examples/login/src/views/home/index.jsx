@@ -1,6 +1,7 @@
 import './index.styl';
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import { connect } from 'react-redux';
 
 class App extends Component {
   state = {
@@ -14,10 +15,12 @@ class App extends Component {
     }
   }
 
-  click = () => {
-    const { state } = this;
-    state.key.key1.key11 = Math.random();
-    this.setState(this.state);
+  onCommit = () => {
+    this.$sam.commit('increment');
+  }
+
+  onDispatch = () => {
+    this.$sam.dispatch('increment');
   }
 
   render() {
@@ -25,9 +28,11 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <button className="test-button" onClick={this.click}>点击按钮</button>
-          <div>{this.state.key.key1.key11}</div>
-          <div>{this.state.key.key2.key22}</div>
+          <div>
+            <button className="test-button" onClick={this.onCommit}>commit</button>
+            <button className="test-button" onClick={this.onDispatch}>dispatch</button>
+          </div>
+          <div>Count: {this.props.count}</div>
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
@@ -45,4 +50,5 @@ class App extends Component {
   }
 }
 
-export default App;
+
+export default connect(state => ({ count: state.home.count }))(App);

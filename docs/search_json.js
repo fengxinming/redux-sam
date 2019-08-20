@@ -14,13 +14,13 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "安装",
-      "content": "$ npm install --save redux react-redux redux-sam\n",
+      "content": "$ npm install --save redux redux-sam react-redux\n",
       "url": "/guide/installation.html",
       "children": [
         {
           "title": "CommonJS 方式加载",
           "url": "/guide/installation.html#commonjs-方式加载",
-          "content": "CommonJS 方式加载import { createStore } from 'redux-sam';\nconst { store } = createStore({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n}, Component);\n\nexport { store };\n\nOrimport { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n});\nconst store = createStore(\n  reducer(sam), \n  sam.state, \n  applyMiddleware(middleware(sam))\n);\n\nexport { store };\n\n"
+          "content": "CommonJS 方式加载import { createStore } from 'redux-sam';\nconst { store } = createStore({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n}, Component);\n\nexport { store };\n\n或者import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n});\nconst store = createStore(\n  reducer(sam), \n  sam.state, \n  applyMiddleware(middleware(sam))\n);\n\nexport { store };\n\n"
         },
         {
           "title": "或者通过 script 方式加载",
