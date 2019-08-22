@@ -2,8 +2,6 @@ import isObject from 'celia/isObject';
 import isString from 'celia/isString';
 import forOwn from 'celia.object/forOwn';
 
-export const isProd = process.env.NODE_ENV === 'production';
-
 /**
  * 断言
  *
@@ -62,6 +60,13 @@ export function removeNestedState(sam, path) {
   delete parentState[moduleName];
 }
 
+/**
+ * 统一参数格式为一个对象
+ *
+ * @param {String|Object} type
+ * @param {any} payload
+ * @param {Object|undefined} options
+ */
 export function unifyObjectStyle(type, payload, options) {
   let _type;
   if (isObject(type) && (_type = type.type)) {
@@ -70,7 +75,7 @@ export function unifyObjectStyle(type, payload, options) {
     type = _type;
   }
 
-  if (!isProd) {
+  if (process.env.NODE_ENV !== 'production') {
     assert(isString(type), `expects string as the type, but found ${typeof type}.`);
   }
 
@@ -79,6 +84,11 @@ export function unifyObjectStyle(type, payload, options) {
   return { type, payload, options };
 }
 
+/**
+ * 序列化命名空间
+ *
+ * @param {Function} fn
+ */
 export function normalizeNamespace(fn) {
   return (component, map, namespace) => {
     isString(namespace)
@@ -88,6 +98,12 @@ export function normalizeNamespace(fn) {
   };
 }
 
+/**
+ * 把数组转换成对象再处理
+ *
+ * @param {Object|Array} map
+ * @param {Function} callback
+ */
 export function normalizeMap(map, callback) {
   return Array.isArray(map)
     ? map.forEach(key => callback(key, key))
@@ -104,7 +120,7 @@ export function normalizeMap(map, callback) {
  */
 export function getContextByNamespace(sam, helper, namespace) {
   const ctx = sam._contextNamespaceMap[namespace];
-  if (!isProd && !ctx) {
+  if (process.env.NODE_ENV !== 'production' && !ctx) {
     console.error(`[redux-sam] module namespace not found in ${helper}(): ${namespace}`);
   }
   return ctx;

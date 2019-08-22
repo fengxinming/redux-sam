@@ -1,6 +1,6 @@
 {
   "name": "redux-sam",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "redux-sam is a middleware of Redux for managing state like Vuex.",
   "main": "./index.js",
   "module": "./es/index.js",
@@ -12,8 +12,9 @@
   },
   "scripts": {
     "test": "jest --detectOpenHandles --config jest.config.js",
-    "build": "node ./scripts/build.js",
-    "dev": "node ./scripts/watch.js",
+    "build": "cross-env NODE_ENV=production node ./scripts/build.js",
+    "docs": "./scripts/docs.sh",
+    "dev": "cross-env NODE_ENV=development node ./scripts/watch.js",
     "gh-pages": "git subtree push --prefix=docs origin gh-pages"
   },
   "keywords": [
@@ -29,6 +30,7 @@
     "@babel/preset-env": "^7.3.1",
     "babel-jest": "^24.0.0",
     "clrsole": "^1.1.1",
+    "cross-env": "^5.2.0",
     "eslint": "^5.12.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.14.0",

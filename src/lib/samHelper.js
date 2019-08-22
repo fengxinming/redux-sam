@@ -3,7 +3,7 @@ import isFunction from 'celia/isFunction';
 import isObject from 'celia/isObject';
 import append from 'celia/_append';
 import forOwn from 'celia.object/forOwn';
-import { isProd, assert, unifyObjectStyle, setNestedState, getNestedState } from './utils';
+import { assert, unifyObjectStyle, setNestedState, getNestedState } from './utils';
 
 /**
  *  挂载订阅函数
@@ -54,7 +54,7 @@ function makeLocalContext(sam, namespace, path) {
 
       if (hasNamespace && !options.root) {
         type = namespace + type;
-        if (!isProd && !sam._actions[type]) {
+        if (process.env.NODE_ENV !== 'production' && !sam._actions[type]) {
           console.error(`[redux-sam] unknown local action type: ${args.type}, global type: ${type}`);
           return;
         }
@@ -69,7 +69,7 @@ function makeLocalContext(sam, namespace, path) {
 
         if (!options.root) {
           type = namespace + type;
-          if (!isProd && !sam._mutations[type]) {
+          if (process.env.NODE_ENV !== 'production' && !sam._mutations[type]) {
             console.error(`[redux-sam] unknown local mutation type: ${args.type}, global type: ${type}`);
             return;
           }
@@ -104,7 +104,7 @@ function makeLocalContext(sam, namespace, path) {
 export function installModule(sam, path, rawModule, hot) {
   const isRoot = !path.length;
 
-  if (!isProd) {
+  if (process.env.NODE_ENV !== 'production') {
     assertRawModule(path, rawModule);
   }
 
@@ -117,7 +117,7 @@ export function installModule(sam, path, rawModule, hot) {
   if (!isRoot) {
     // 分类指定命名空间的模块
     if (rawModule.namespaced) {
-      if (sam._contextNamespaceMap[namespace] && !isProd) {
+      if (process.env.NODE_ENV !== 'production' && sam._contextNamespaceMap[namespace]) {
         console.error(`[redux-sam] duplicate namespace ${namespace} for the namespaced module ${path.join('/')}`);
       }
       sam._contextNamespaceMap[namespace] = local;

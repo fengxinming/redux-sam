@@ -1,6 +1,7 @@
 # 摘要
 
 * [安装](installation.md)
+- [入门篇](start.md)
 
 ## 开始
 

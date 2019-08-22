@@ -9,12 +9,14 @@ $ npm install --save redux redux-sam react-redux
 
 ```js
 import { createStore } from 'redux-sam';
+import createLogger from 'redux-sam/logger';
 
 const { store } = createStore({
   state: { ... },
   mutations: { ... },
-  actions: { ... }
-  modules: { ... }
+  actions: { ... },
+  modules: { ... },
+  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
 }, Component);
 
 export { store };
@@ -26,12 +28,14 @@ export { store };
 ```js
 import { createStore, applyMiddleware } from 'redux';
 import { Sam, reducer, middleware } from 'redux-sam';
+import createLogger from 'redux-sam/logger';
 
 const sam = new Sam({
   state: { ... },
   mutations: { ... },
-  actions: { ... }
-  modules: { ... }
+  actions: { ... },
+  modules: { ... },
+  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
 });
 const store = createStore(
   reducer(sam), 
@@ -47,21 +51,42 @@ export { store };
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/redux-sam/iife.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/redux-sam/logger.iife.min.js"></script>
 <script>
   // window.reduxSam
-  reduxSam.Sam
-  reduxSam.middleware
-  reduxSam.reducer
-  reduxSam.createHelpers
-  reduxSam.createStore
+  var createStore = reduxSam.createStore;
+
+  const { store } = createStore({
+    state: { ... },
+    mutations: { ... },
+    actions: { ... },
+    modules: { ... },
+    plugins: [process.env.NODE_ENV !== 'production' && createSamLogger()]
+  }, Component);
 </script>
 
 ```
 
-```html
-<script src="https://cdn.jsdelivr.net/npm/redux-sam/logger.iife.min.js"></script>
-<script>
-  // window.createSamLogger
-</script>
+或者
+
+```js
+var createStore = Redux.createStore;
+var applyMiddleware = Redux.applyMiddleware;
+var Sam = reduxSam.Sam;
+var reducer = reduxSam.reducer;
+var middleware = reduxSam.middleware;
+
+var sam = new Sam({
+  state: { ... },
+  mutations: { ... },
+  actions: { ... },
+  modules: { ... },
+  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]
+});
+const store = createStore(
+  reducer(sam), 
+  sam.state, 
+  applyMiddleware(middleware(sam))
+);
 
 ```

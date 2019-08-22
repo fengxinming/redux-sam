@@ -20,12 +20,59 @@ window.ydoc_plugin_search_json = {
         {
           "title": "CommonJS 方式加载",
           "url": "/guide/installation.html#commonjs-方式加载",
-          "content": "CommonJS 方式加载import { createStore } from 'redux-sam';\nconst { store } = createStore({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n}, Component);\n\nexport { store };\n\n或者import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\n\nconst sam = new Sam({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... }\n  modules: { ... }\n});\nconst store = createStore(\n  reducer(sam), \n  sam.state, \n  applyMiddleware(middleware(sam))\n);\n\nexport { store };\n\n"
+          "content": "CommonJS 方式加载import { createStore } from 'redux-sam';import createLogger from 'redux-sam/logger';\n\nconst { store } = createStore({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... },\n  modules: { ... },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n}, Component);\n\nexport { store };\n\n或者import { createStore, applyMiddleware } from 'redux';import { Sam, reducer, middleware } from 'redux-sam';\nimport createLogger from 'redux-sam/logger';\n\nconst sam = new Sam({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... },\n  modules: { ... },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n});\nconst store = createStore(\n  reducer(sam), \n  sam.state, \n  applyMiddleware(middleware(sam))\n);\n\nexport { store };\n\n"
         },
         {
           "title": "或者通过 script 方式加载",
           "url": "/guide/installation.html#或者通过-script-方式加载",
-          "content": "或者通过 script 方式加载\n  // window.reduxSam\n  reduxSam.Sam\n  reduxSam.middleware\n  reduxSam.reducer\n  reduxSam.createHelpers\n  reduxSam.createStore\n\n\n\n  // window.createSamLogger\n\n\n"
+          "content": "或者通过 script 方式加载\n\n  // window.reduxSam\n  var createStore = reduxSam.createStore;\n\n  const { store } = createStore({\n    state: { ... },\n    mutations: { ... },\n    actions: { ... },\n    modules: { ... },\n    plugins: [process.env.NODE_ENV !== 'production' && createSamLogger()]\n  }, Component);\n\n\n或者var createStore = Redux.createStore;var applyMiddleware = Redux.applyMiddleware;\nvar Sam = reduxSam.Sam;\nvar reducer = reduxSam.reducer;\nvar middleware = reduxSam.middleware;\n\nvar sam = new Sam({\n  state: { ... },\n  mutations: { ... },\n  actions: { ... },\n  modules: { ... },\n  plugins: [process.env.NODE_ENV !== 'production' && createLogger()]\n});\nconst store = createStore(\n  reducer(sam), \n  sam.state, \n  applyMiddleware(middleware(sam))\n);\n\n"
+        }
+      ]
+    },
+    {
+      "title": "入门篇",
+      "content": "",
+      "url": "/guide/start.html",
+      "children": [
+        {
+          "title": "快速生成React项目",
+          "url": "/guide/start.html#快速生成react项目",
+          "content": "快速生成React项目有三种方式npx (npm 5.2+)\n  npx create-react-app my-appnpm (npm 6+)\n  npm create react-app my-appyarn (yarn 0.25+)\n  yarn create react-app my-app  \n"
+        },
+        {
+          "title": "调整代码结构",
+          "url": "/guide/start.html#调整代码结构",
+          "content": "调整代码结构├── public│   ├── index.html\n│   └── ... # 静态资源\n└── src\n    ├── index.js\n    ├── api\n    │    └── ... # 抽取出API请求\n    ├── components\n    │    ├── App\n    │    └── ... # 抽取出公共组件\n    └── store\n         ├── index.js          # 我们组装模块并导出 store 的地方\n         ├── actions.js        # 根级别的 action\n         └── mutations.js      # 根级别的 mutation\n\n"
+        },
+        {
+          "title": "配置 mutations",
+          "url": "/guide/start.html#配置-mutations",
+          "content": "配置 mutations配置 src/store/mutations.jsexport default {  increment(state) {\n    state.count++;\n  }\n}\n\n"
+        },
+        {
+          "title": "配置 actions",
+          "url": "/guide/start.html#配置-actions",
+          "content": "配置 actions配置 src/store/actions.jsexport default {  increment({ commit }) {\n    setTimeout(() => {\n      commit('increment');\n    }, 1000);\n  }\n};\n\n"
+        },
+        {
+          "title": "初始化 store",
+          "url": "/guide/start.html#初始化-store",
+          "content": "初始化 store配置 src/store/index.jsimport { createStore } from 'redux-sam';import { Component } from 'react';\nimport mutations from './mutations';\nimport actions from './actions';\n\nconst { store } = createStore({\n  state: {\n    count: 0\n  },\n  mutations,\n  actions\n}, Component);\n\nexport { store };\n\n"
+        },
+        {
+          "title": "修改默认的 App 组件",
+          "url": "/guide/start.html#修改默认的-app-组件",
+          "content": "修改默认的 App 组件import React, { Component } from 'react';import { connect } from 'react-redux';\nimport logo from './logo.svg';\nimport './index.css';\n\nclass App extends Component {\n  onCommit = () => {\n    this.$sam.commit('increment');\n  }\n  onDispatch = () => {\n    this.$sam.dispatch('increment');\n  }\n  render() {\n    return (\n      \n        \n          \n          \n            commit&nbsp;\n            dispatch\n          \n          {this.props.count}\n          \n            Edit src/App.js and save to reload.\n          \n          \n            Learn React\n          \n        \n      \n    );\n  }\n}\n\nexport default connect(state => ({\n  count: state.count\n}))(App);\n\n"
+        },
+        {
+          "title": "修改 index.js",
+          "url": "/guide/start.html#修改-index.js",
+          "content": "修改 index.jsimport './index.css';import React from 'react';\nimport ReactDOM from 'react-dom';\nimport { Provider } from 'react-redux';\nimport App from './components/App';\nimport * as serviceWorker from './serviceWorker';\nimport { store } from './store';\n\nReactDOM.render(\n  (\n    \n  ), document.getElementById('root'));\n\nserviceWorker.unregister();\n\n"
+        },
+        {
+          "title": "启动项目",
+          "url": "/guide/start.html#启动项目",
+          "content": "启动项目$ npm start\n"
         }
       ]
     },
@@ -165,7 +212,7 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "项目结构",
-      "content": "redux-sam 并不限制你的代码结构。但是，它规定了一些需要遵守的规则：应用层级的状态应该集中到单个 store 对象中。提交 mutation 是更改状态的唯一方法，并且这个过程是同步的。异步逻辑都应该封装到 action 里面。只要你遵守以上规则，如何组织代码随你便。如果你的 store 文件太大，只需将 action、mutation 分割到单独的文件。对于大型应用，我们会希望把 redux-sam 相关代码分割到模块中。下面是项目结构示例：├── index.html├── main.js\n├── api\n│   └── ... # 抽取出API请求\n├── components\n│   ├── App.vue\n│   └── ...\n└── store\n    ├── index.js          # 我们组装模块并导出 store 的地方\n    ├── actions.js        # 根级别的 action\n    ├── mutations.js      # 根级别的 mutation\n    └── modules\n        ├── cart.js       # 购物车模块\n        └── products.js   # 产品模块\n\n",
+      "content": "redux-sam 并不限制你的代码结构。但是，它规定了一些需要遵守的规则：应用层级的状态应该集中到单个 store 对象中。提交 mutation 是更改状态的唯一方法，并且这个过程是同步的。异步逻辑都应该封装到 action 里面。只要你遵守以上规则，如何组织代码随你便。如果你的 store 文件太大，只需将 action、mutation 分割到单独的文件。对于大型应用，我们会希望把 redux-sam 相关代码分割到模块中。下面是项目结构示例：├── public│   ├── index.html\n│   └── ... # 静态资源\n└── src\n    ├── index.js\n    ├── api\n    │    └── ... # 抽取出API请求\n    ├── components\n    │    ├── App\n    │    └── ... # 抽取出公共组件\n    └── store\n         ├── index.js          # 我们组装模块并导出 store 的地方\n         ├── actions.js        # 根级别的 action\n         ├── mutations.js      # 根级别的 mutation\n         └── modules\n             ├── cart.js       # 购物车模块\n             └── products.js   # 产品模块\n\n",
       "url": "/guide/structure.html",
       "children": []
     },

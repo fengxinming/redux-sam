@@ -14,6 +14,9 @@ function configure(input, output, name) {
       format: 'iife',
       legacy: false,
       esModule: false
+    },
+    replaceAll: {
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     }
   };
 }

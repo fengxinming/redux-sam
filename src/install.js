@@ -16,17 +16,13 @@ export default function (proto, { store, sam, mapActions, mapMutations }) {
       // 挂载store
       $store: {
         configurable: true,
-        get() {
-          return store;
-        }
+        get() { return store; }
       },
 
       // 挂载Sam
       $sam: {
         configurable: true,
-        get() {
-          return sam;
-        }
+        get() { return sam; }
       }
     };
     Object.defineProperties(proto, prototypeAccessors);

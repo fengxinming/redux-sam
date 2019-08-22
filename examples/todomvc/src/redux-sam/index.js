@@ -1,5 +1,5 @@
 /*
- * redux-sam.js v1.1.0
+ * redux-sam.js v1.1.1
  * (c) 2018-2019 Jesse Feng
  * Released under the MIT License.
  */
@@ -10,8 +10,6 @@ import forOwn from 'celia.object/forOwn';
 import isPromiseLike from 'celia/isPromiseLike';
 import append from 'celia/_append';
 import assign from 'celia/assign';
-
-var isProd = process.env.NODE_ENV === 'production';
 
 /**
  * 断言
@@ -71,6 +69,13 @@ function removeNestedState(sam, path) {
   delete parentState[moduleName];
 }
 
+/**
+ * 统一参数格式为一个对象
+ *
+ * @param {String|Object} type
+ * @param {any} payload
+ * @param {Object|undefined} options
+ */
 function unifyObjectStyle(type, payload, options) {
   var _type;
   if (isObject(type) && (_type = type.type)) {
@@ -79,7 +84,7 @@ function unifyObjectStyle(type, payload, options) {
     type = _type;
   }
 
-  if (!isProd) {
+  if (process.env.NODE_ENV !== 'production') {
     assert(isString(type), ("expects string as the type, but found " + (typeof type) + "."));
   }
 
@@ -88,6 +93,11 @@ function unifyObjectStyle(type, payload, options) {
   return { type: type, payload: payload, options: options };
 }
 
+/**
+ * 序列化命名空间
+ *
+ * @param {Function} fn
+ */
 function normalizeNamespace(fn) {
   return function (component, map, namespace) {
     isString(namespace)
@@ -97,6 +107,12 @@ function normalizeNamespace(fn) {
   };
 }
 
+/**
+ * 把数组转换成对象再处理
+ *
+ * @param {Object|Array} map
+ * @param {Function} callback
+ */
 function normalizeMap(map, callback) {
   return Array.isArray(map)
     ? map.forEach(function (key) { return callback(key, key); })
@@ -113,7 +129,7 @@ function normalizeMap(map, callback) {
  */
 function getContextByNamespace(sam, helper, namespace) {
   var ctx = sam._contextNamespaceMap[namespace];
-  if (!isProd && !ctx) {
+  if (process.env.NODE_ENV !== 'production' && !ctx) {
     console.error(("[redux-sam] module namespace not found in " + helper + "(): " + namespace));
   }
   return ctx;
@@ -170,7 +186,7 @@ function makeLocalContext(sam, namespace, path) {
 
       if (hasNamespace && !options.root) {
         type = namespace + type;
-        if (!isProd && !sam._actions[type]) {
+        if (process.env.NODE_ENV !== 'production' && !sam._actions[type]) {
           console.error(("[redux-sam] unknown local action type: " + (args.type) + ", global type: " + type));
           return;
         }
@@ -187,7 +203,7 @@ function makeLocalContext(sam, namespace, path) {
 
         if (!options.root) {
           type = namespace + type;
-          if (!isProd && !sam._mutations[type]) {
+          if (process.env.NODE_ENV !== 'production' && !sam._mutations[type]) {
             console.error(("[redux-sam] unknown local mutation type: " + (args.type) + ", global type: " + type));
             return;
           }
@@ -222,7 +238,7 @@ function makeLocalContext(sam, namespace, path) {
 function installModule(sam, path, rawModule, hot) {
   var isRoot = !path.length;
 
-  if (!isProd) {
+  if (process.env.NODE_ENV !== 'production') {
     assertRawModule(path, rawModule);
   }
 
@@ -235,7 +251,7 @@ function installModule(sam, path, rawModule, hot) {
   if (!isRoot) {
     // 分类指定命名空间的模块
     if (rawModule.namespaced) {
-      if (sam._contextNamespaceMap[namespace] && !isProd) {
+      if (process.env.NODE_ENV !== 'production' && sam._contextNamespaceMap[namespace]) {
         console.error(("[redux-sam] duplicate namespace " + namespace + " for the namespaced module " + (path.join('/'))));
       }
       sam._contextNamespaceMap[namespace] = local;
@@ -388,7 +404,7 @@ prototypeAccessors.state.get = function () {
 };
 
 prototypeAccessors.state.set = function (v) {
-  if (!isProd) {
+  if (process.env.NODE_ENV !== 'production') {
     assert(false, "use sam.replaceState() to explicit replace redux-sam state.");
   }
 };
@@ -434,7 +450,7 @@ Sam.prototype.registerModule = function registerModule (path, rawModule, options
     path = [path];
   }
 
-  if (!isProd) {
+  if (process.env.NODE_ENV !== 'production') {
     assert(Array.isArray(path), "module path must be a string or an Array.");
     assert(path.length > 0, 'cannot register the root module by using registerModule.');
   }
@@ -457,7 +473,7 @@ Sam.prototype.unregisterModule = function unregisterModule (path) {
     path = [path];
   }
 
-  if (!isProd) {
+  if (process.env.NODE_ENV !== 'production') {
     assert(Array.isArray(path), "module path must be a string or an Array.");
   }
 
@@ -567,7 +583,7 @@ function reducer(sam) {
 
     var entry = sam._mutations[type];
     if (!entry) {
-      if (!isProd) {
+      if (process.env.NODE_ENV !== 'production') {
         console.error(("[redux-sam] unknown mutation type: " + type));
       }
       return;
@@ -598,7 +614,7 @@ function triggerActionSubscribers(actionSubscribers, method, action, state) {
         fn && fn(action, state);
       });
   } catch (e) {
-    if (!isProd) {
+    if (process.env.NODE_ENV !== 'production') {
       console.warn(("[redux-sam] error in " + method + " action subscribers: "));
       console.error(e);
     }
@@ -642,7 +658,7 @@ function middleware(sam) {
 
           var entry = _actions[type];
           if (!entry) {
-            if (!isProd) {
+            if (process.env.NODE_ENV !== 'production') {
               console.error(("[redux-sam] unknown action type: " + type));
             }
             return;
@@ -687,17 +703,13 @@ function install (proto, ref) {
       // 挂载store
       $store: {
         configurable: true,
-        get: function get() {
-          return store;
-        }
+        get: function get() { return store; }
       },
 
       // 挂载Sam
       $sam: {
         configurable: true,
-        get: function get() {
-          return sam;
-        }
+        get: function get() { return sam; }
       }
     };
     Object.defineProperties(proto, prototypeAccessors);
@@ -758,4 +770,6 @@ function createStore$1 (options, proto) {
   return ret;
 }
 
-export { Sam, createHelpers, createStore$1 as createStore, install, middleware, reducer };
+var version = '1.1.1';
+
+export { Sam, createHelpers, createStore$1 as createStore, install, middleware, reducer, version };

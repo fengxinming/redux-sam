@@ -70,6 +70,11 @@ function watch() {
             logger.info(`复制 ${shoppingCart} 成功`);
           });
 
+          const start = `examples/start/src/redux-sam`;
+          copy(n, resolve(start)).then(() => {
+            logger.info(`复制 ${start} 成功`);
+          });
+
           const todomvc = `examples/todomvc/src/redux-sam`;
           copy(n, resolve(todomvc)).then(() => {
             logger.info(`复制 ${todomvc} 成功`);

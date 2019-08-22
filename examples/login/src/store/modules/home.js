@@ -1,3 +1,5 @@
+import sleep from 'celia/sleep';
+
 export default {
   state: {
     count: 0
@@ -8,7 +10,8 @@ export default {
     }
   },
   actions: {
-    increment({ commit }) {
+    async increment({ commit }) {
+      await sleep(1000);
       commit('increment');
       commit('increment');
     }

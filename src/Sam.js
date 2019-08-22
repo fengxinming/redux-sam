@@ -1,6 +1,6 @@
 import isFunction from 'celia/isFunction';
 import isString from 'celia/isString';
-import { assert, removeNestedState, isProd } from './lib/utils';
+import { assert, removeNestedState } from './lib/utils';
 import { installModule, genericSubscribe, resetSam } from './lib/samHelper';
 
 /**
@@ -43,7 +43,7 @@ export default class Sam {
   }
 
   set state(v) {
-    if (!isProd) {
+    if (process.env.NODE_ENV !== 'production') {
       assert(false, `use sam.replaceState() to explicit replace redux-sam state.`);
     }
   }
@@ -87,7 +87,7 @@ export default class Sam {
       path = [path];
     }
 
-    if (!isProd) {
+    if (process.env.NODE_ENV !== 'production') {
       assert(Array.isArray(path), `module path must be a string or an Array.`);
       assert(path.length > 0, 'cannot register the root module by using registerModule.');
     }
@@ -110,7 +110,7 @@ export default class Sam {
       path = [path];
     }
 
-    if (!isProd) {
+    if (process.env.NODE_ENV !== 'production') {
       assert(Array.isArray(path), `module path must be a string or an Array.`);
     }
 
