@@ -43,23 +43,23 @@ function genConfig(name, opts) {
     replaceAll
   } = opts;
   inputOptions.plugins = [
-    replace(Object.assign({
-      __VERSION__: version
-    }, replaceAll)),
     combine({
       include: /src\/index.js$/,
       exports: 'named'
     }),
     flow(),
-    buble(),
     alias(Object.assign({
       '@': resolve('./')
     }, aliases)),
+    replace(Object.assign({
+      __VERSION__: version
+    }, replaceAll)),
     node({
       mainFields: ['module', 'main', 'jsnext'],
       browser: true
     }),
-    cjs()
+    cjs(),
+    buble()
   ].concat(inputOptions.plugins || []);
 
   outputOptions.banner = banner;
