@@ -122,6 +122,7 @@ const store = createStore(
 Running the examples:
 
 ```bash
+$ git clone https://github.com/react-hobby/redux-sam
 $ npm install
 $ npm run dev
 
