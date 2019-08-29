@@ -3,7 +3,7 @@
   "keywords": "react,redux,redux-sam",
   "description": "redux-sam is a middleware of Redux for managing state like Vuex.",
   "author": "Jesse Feng",
-  "dist": "../../docs",
+  "dist": "../../gh-pages/zh-cn",
   "pluginsConfig": {
     "import-asset": {
       "css": [

@@ -5,13 +5,13 @@
 workspace=$(dirname $(cd $(dirname $0); pwd;));
 
 build() {
-  cd $workspace/docs-md/zh-cn
+  cd $workspace/docs/zh-cn
 
   ydoc build
 }
 
 serve() {
-  cd $workspace/docs-md/zh-cn
+  cd $workspace/docs/zh-cn
 
   ydoc serve
 }

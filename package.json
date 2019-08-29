@@ -16,7 +16,7 @@
     "build": "cross-env NODE_ENV=production node ./scripts/build.js",
     "docs": "./scripts/docs.sh",
     "watch": "cross-env NODE_ENV=development node ./scripts/watch.js",
-    "gh-pages": "git subtree push --prefix=docs origin gh-pages"
+    "gh-pages": "git subtree push --prefix=gh-pages origin gh-pages"
   },
   "keywords": [
     "redux",
