@@ -111,13 +111,13 @@ const store = createStore(
 
 ## Examples
 
-  - [chat](examples/chat)
-  - [counter](examples/counter)
-  - [counter-hot](examples/counter-hot)
-  - [login](examples/login)
-  - [shopping-cart](examples/shopping-cart)
-  - [start](examples/start)
-  - [todomvc](examples/todomvc)
+  - [Get started](examples/start)
+  - [Counter](examples/counter)
+  - [Counter with Hot Reload](examples/counter-hot)
+  - [TodoMVC](examples/todomvc)
+  - [Login](examples/login)
+  - [Flux Chat](examples/chat)
+  - [Shopping Cart](examples/shopping-cart)
 
 Running the examples:
 
