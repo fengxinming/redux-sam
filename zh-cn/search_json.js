@@ -72,7 +72,7 @@ window.ydoc_plugin_search_json = {
         {
           "title": "启动项目",
           "url": "/guide/start.html#启动项目",
-          "content": "启动项目$ npm start\n"
+          "content": "启动项目$ npm start\n代码示例"
         }
       ]
     },
@@ -246,7 +246,7 @@ window.ydoc_plugin_search_json = {
     },
     {
       "title": "代码示例",
-      "content": "chat\ncounter\ncounter-hot\nlogin\nshopping-cart\ntodomvc\n",
+      "content": "Get started\nCounter\nCounter with Hot Reload\nTodoMVC\nLogin\nFlux Chat\nShopping Cart\n",
       "url": "/guide/examples.html",
       "children": []
     }
