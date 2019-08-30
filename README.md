@@ -10,7 +10,7 @@
 
 ## [Full Documentation](https://react-hobby.github.io/redux-sam/)
 
-[![redux-sam](https://react-hobby.github.io/redux-sam/img/redux-sam.png)](https://react-hobby.github.io/redux-sam/index.html)
+[![redux-sam](https://react-hobby.github.io/redux-sam/zh-cn/img/redux-sam.png)](https://react-hobby.github.io/redux-sam/index.html)
 
 ---
 
