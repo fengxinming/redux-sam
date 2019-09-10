@@ -1,12 +1,13 @@
 import { createStore, applyMiddleware } from 'redux';
-import { reducer, middleware, Sam, createHelpers } from '../../redux-sam'
-import { mutations, STORAGE_KEY } from './mutations'
-import actions from './actions'
-import plugins from './plugins'
+import { reducer, middleware, Sam, createHelpers } from 'redux-sam';
+import { mutations, STORAGE_KEY } from './mutations';
+import actions from './actions';
+import plugins from './plugins';
 
 const sam = new Sam({
   state: {
-    todos: JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]')
+    todos: JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]'),
+    todosChanged: 0
   },
   actions,
   mutations,

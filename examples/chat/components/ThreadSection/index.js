@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import map from 'celia.object/map';
+import map from 'celia/map';
 import Thread from '../Thread';
 import { getUnreadCount, getCurrentThread } from '../../store/getter';
 import { connect } from 'react-redux';
@@ -41,5 +41,6 @@ class ThreadSection extends Component {
 
 export default connect(state => ({
   threads: state.threads,
+  threadsChanged: state.threadsChanged,
   currentThreadID: state.currentThreadID
 }))(ThreadSection);

@@ -35,5 +35,6 @@ class ProductList extends Component {
 }
 
 export default connect(state => ({
-  products: state.products.all
+  products: state.products.all,
+  productsChanged: state.products.allChanged
 }))(ProductList);

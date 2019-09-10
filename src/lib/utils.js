@@ -1,6 +1,6 @@
 import isObject from 'celia/isObject';
 import isString from 'celia/isString';
-import forOwn from 'celia.object/forOwn';
+import forOwn from 'celia/forOwn';
 
 /**
  * 断言

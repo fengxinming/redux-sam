@@ -1,4 +1,4 @@
-import copy from 'celia.object/copy';
+import clone from 'celia/looseClone';
 
 export default function createSamLogger({
   collapsed = true,
@@ -8,13 +8,13 @@ export default function createSamLogger({
   logger = console
 } = {}) {
   return (sam) => {
-    let prevState = copy(sam.state, true);
+    let prevState = clone(sam.state, true);
 
     sam.subscribe((mutation, state) => {
       if (typeof logger === 'undefined') {
         return;
       }
-      const nextState = copy(state, true);
+      const nextState = clone(state, true);
 
       if (filter(mutation, prevState, nextState)) {
         const time = new Date();

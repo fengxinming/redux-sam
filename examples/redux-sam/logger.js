@@ -3,7 +3,7 @@
  * (c) 2018-2019 Jesse Feng
  * Released under the MIT License.
  */
-import copy from 'celia.object/copy';
+import clone from 'celia/looseClone';
 
 function createSamLogger(ref) {
   if ( ref === void 0 ) ref = {};
@@ -14,13 +14,13 @@ function createSamLogger(ref) {
   var logger = ref.logger; if ( logger === void 0 ) logger = console;
 
   return function (sam) {
-    var prevState = copy(sam.state, true);
+    var prevState = clone(sam.state, true);
 
     sam.subscribe(function (mutation, state) {
       if (typeof logger === 'undefined') {
         return;
       }
-      var nextState = copy(state, true);
+      var nextState = clone(state, true);
 
       if (filter(mutation, prevState, nextState)) {
         var time = new Date();

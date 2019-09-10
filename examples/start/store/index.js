@@ -1,4 +1,4 @@
-import { createStore } from '../../redux-sam';
+import { createStore } from 'redux-sam';
 import { Component } from 'react';
 import mutations from './mutations';
 import actions from './actions';

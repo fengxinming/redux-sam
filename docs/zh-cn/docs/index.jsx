@@ -5,7 +5,7 @@ banner:
   btns: 
     - { name: '开 始', href: './guide/index.html', primary: true }
     - { name: 'Github >', href: 'https://github.com/react-hobby/redux-sam' }
-  caption: '当前版本: v1.1.1'
+  caption: '当前版本: v1.1.2'
 features: 
   - { name: 'State', desc: 'redux-sam 使用单一状态树，用一个对象就包含了全部的应用层级状态。' }
   - { name: 'Mutation', desc: '更改 redux-sam 的 store 中的状态的唯一方法是提交 mutation，redux-sam 中的 mutation 非常类似于事件，每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数。' }

@@ -1,6 +1,6 @@
 import { Component } from 'react';
-import { createStore } from '../../redux-sam';
-import createLogger from '../../redux-sam/logger';
+import { createStore } from 'redux-sam';
+import createLogger from 'redux-sam/logger';
 import mutations from './mutations';
 import actions from './actions';
 
@@ -16,6 +16,7 @@ const state = {
     }
     */
   },
+  threadsChanged: 0,
   messages: {
     /*
     id: {

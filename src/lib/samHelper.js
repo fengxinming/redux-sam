@@ -2,7 +2,7 @@ import isPromiseLike from 'celia/isPromiseLike';
 import isFunction from 'celia/isFunction';
 import isObject from 'celia/isObject';
 import append from 'celia/_append';
-import forOwn from 'celia.object/forOwn';
+import forOwn from 'celia/forOwn';
 import { assert, unifyObjectStyle, setNestedState, getNestedState } from './utils';
 
 /**

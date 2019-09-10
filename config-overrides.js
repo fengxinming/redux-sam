@@ -1,12 +1,12 @@
 const fs = require('fs');
-const path = require('path');
+const { join } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { override, addWebpackAlias, fixBabelImports } = require('customize-cra');
 const { RewiredRule } = require('chain-css-loader');
 const { DefinePlugin } = require('webpack');
 
 function resolve() {
-  return path.join(__dirname, ...arguments);
+  return join(__dirname, ...arguments);
 }
 
 const examplePath = resolve('examples');
@@ -30,8 +30,8 @@ const htmls = [new HtmlWebpackPlugin({
 const rewrites = [];
 
 fs.readdirSync(examplePath).forEach((dir) => {
-  const fullDir = path.join(examplePath, dir);
-  const entry = path.join(fullDir, 'app.js');
+  const fullDir = join(examplePath, dir);
+  const entry = join(fullDir, 'app.js');
 
   if (fs.statSync(fullDir).isDirectory() && fs.existsSync(entry)) {
     entries[dir] = [
@@ -57,7 +57,8 @@ module.exports = {
   webpack(config, env) {
     return override(
       addWebpackAlias({
-        '~': examplePath
+        '~': examplePath,
+        'redux-sam': join(examplePath, 'redux-sam')
       }),
       fixBabelImports('import', {
         libraryName: 'antd',

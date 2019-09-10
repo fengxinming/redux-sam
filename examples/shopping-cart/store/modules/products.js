@@ -2,7 +2,8 @@ import shop from '../../api/shop'
 
 // initial state
 const state = {
-  all: []
+  all: [],
+  allChanged: 0
 }
 
 // actions
@@ -24,7 +25,8 @@ const mutations = {
     const product = state.all.find(product => product.id === id);
     product.inventory--;
     if (!product.inventory) {
-      state.all = state.all.slice(0);
+      // state.all = state.all.slice(0);
+      state.allChanged++;
     }
   }
 }

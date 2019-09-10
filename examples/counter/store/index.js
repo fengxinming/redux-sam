@@ -1,6 +1,6 @@
-import { createStore } from '../../redux-sam';
+import { createStore } from 'redux-sam';
 import { Component } from 'react';
-import createLogger from '../../redux-sam/logger';
+import createLogger from 'redux-sam/logger';
 
 const state = {
   count: 0

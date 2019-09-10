@@ -1,6 +1,6 @@
 {
   "name": "redux-sam",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "redux-sam is a middleware of Redux for managing state like Vuex.",
   "main": "./index.js",
   "module": "./es/index.js",
@@ -59,8 +59,7 @@
     "zlib": "^1.0.5"
   },
   "dependencies": {
-    "celia": "^6.0.3",
-    "celia.object": "^1.0.4"
+    "celia": "^6.1.0"
   },
   "browserslist": {
     "production": [

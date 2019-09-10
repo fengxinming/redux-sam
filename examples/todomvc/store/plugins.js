@@ -1,5 +1,5 @@
 import { STORAGE_KEY } from './mutations'
-import createLogger from '../../redux-sam/logger'
+import createLogger from 'redux-sam/logger'
 
 const localStoragePlugin = store => {
   store.subscribe((mutation, { todos }) => {

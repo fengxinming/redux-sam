@@ -1,4 +1,4 @@
-export const STORAGE_KEY = 'todos-react'
+export const STORAGE_KEY = 'todos-react';
 
 // for testing
 if (navigator.userAgent.indexOf('PhantomJS') > -1) {
@@ -7,7 +7,9 @@ if (navigator.userAgent.indexOf('PhantomJS') > -1) {
 
 export const mutations = {
   addTodo(state, todo) {
-    state.todos = state.todos.concat(todo);
+    // state.todos = state.todos.concat(todo);
+    state.todos.push(todo);
+    state.todosChanged++;
   },
 
   removeTodo(state, todo) {
@@ -17,13 +19,17 @@ export const mutations = {
       // 不触发组件更新
       return false;
     }
-    state.todos = todos.slice(0, index).concat(todos.slice(index + 1));
+    // state.todos = todos.slice(0, index).concat(todos.slice(index + 1));
+    state.todos.splice(index, 1);
+    state.todosChanged--;
   },
 
   updateTodo(state, { todo, newTodo }) {
     const { todos } = state;
     const index = todos.indexOf(todo);
-    state.todos = todos.slice(0, index).concat(newTodo, todos.slice(index + 1));
+    // state.todos = todos.slice(0, index).concat(newTodo, todos.slice(index + 1));
+    state.todos.splice(index, 1, newTodo);
+    state.todosChanged--;
   },
 
   updateTodos(state, newTodos) {

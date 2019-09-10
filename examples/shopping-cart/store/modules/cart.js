@@ -4,13 +4,15 @@ import shop from '../../api/shop'
 // shape: [{ id, quantity }]
 const state = {
   items: [],
+  itemsChanged: 0,
   checkoutStatus: null
 }
 
 // actions
 const actions = {
   checkout({ commit, state }, products) {
-    const savedCartItems = [...state.items]
+    // const savedCartItems = [...state.items]
+    const savedCartItems = state.items
     commit('setCheckoutStatus', null)
     // empty cart
     commit('setCartItems', { items: [] })
@@ -20,7 +22,7 @@ const actions = {
       () => {
         commit('setCheckoutStatus', 'failed')
         // rollback to the cart saved before sending the request
-        commit('setCartItems', { items: savedCartItems })
+        commit('setCartItems', { items: savedCartItems, itemsChanged: state.itemsChanged++ })
       }
     )
   },
@@ -54,8 +56,9 @@ const mutations = {
     cartItem.quantity++
   },
 
-  setCartItems(state, { items }) {
+  setCartItems(state, { items, itemsChanged }) {
     state.items = items
+    state.itemsChanged = itemsChanged
   },
 
   setCheckoutStatus(state, status) {

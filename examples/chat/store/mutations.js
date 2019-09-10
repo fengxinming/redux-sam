@@ -21,7 +21,8 @@ function addMessage(state, message) {
   state.messages[id] = message;
 
   // // 触发当天对话框信息更新
-  state.threads = { ...state.threads };
+  // state.threads = { ...state.threads };
+  state.threadsChanged++;
 }
 
 function setCurrentThread(state, id) {

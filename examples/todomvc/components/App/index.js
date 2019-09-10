@@ -1,7 +1,7 @@
 //<style src="todomvc-app-css/index.css"></style>
 
 import React, { PureComponent } from 'react';
-import map from 'celia.object/map';
+import map from 'celia/map';
 import { connect } from 'react-redux';
 import { mapActions, sam } from '../../store';
 import TodoItem from '../TodoItem';
@@ -123,5 +123,6 @@ class App extends PureComponent {
 }
 
 export default connect(state => ({
+  todosChanged: state.todosChanged,
   todos: state.todos
 }))(App);

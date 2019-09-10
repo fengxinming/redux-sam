@@ -1,6 +1,6 @@
-import { createStore } from '../../redux-sam';
+import { createStore } from 'redux-sam';
 import { Component } from 'react';
-import createLogger from '../../redux-sam/logger';
+import createLogger from 'redux-sam/logger';
 import cart from './modules/cart'
 import products from './modules/products'
 
