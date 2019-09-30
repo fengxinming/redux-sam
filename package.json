@@ -59,7 +59,7 @@
     "zlib": "^1.0.5"
   },
   "dependencies": {
-    "celia": "^6.1.0"
+    "celia": "^6.1.4"
   },
   "browserslist": {
     "production": [

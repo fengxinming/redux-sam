@@ -1,5 +1,5 @@
 /*
- * redux-sam.js v1.1.1
+ * redux-sam.js v1.1.2
  * (c) 2018-2019 Jesse Feng
  * Released under the MIT License.
  */
@@ -770,6 +770,6 @@ function createStore$1 (options, proto) {
   return ret;
 }
 
-var version = '1.1.1';
+var version = '1.1.2';
 
 export { Sam, createHelpers, createStore$1 as createStore, install, middleware, reducer, version };
