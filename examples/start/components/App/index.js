@@ -1,15 +1,32 @@
+import './index.styl';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import logo from './logo.svg';
-import './index.css';
+import { Button } from 'antd';
 
 class App extends Component {
   onCommit = () => {
     this.$sam.commit('increment');
   }
 
+  onCommit2 = () => {
+    this.$store.dispatch('increment');
+  }
+
   onDispatch = () => {
     this.$sam.dispatch('increment');
+  }
+
+  onDispatch2 = () => {
+    this.$store.dispatchAsync('increment');
+  }
+
+  onDispatch3 = () => {
+    this.$sam.dispatch('decrement');
+  }
+
+  onDispatch4 = () => {
+    this.$store.dispatchAsync('decrement');
   }
 
   render() {
@@ -18,8 +35,16 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <div>
-            <button className="button" onClick={this.onCommit}>commit</button>&nbsp;
-            <button className="button" onClick={this.onDispatch}>dispatch</button>
+            <Button onClick={this.onCommit}>this.$sam.commit( mutation )</Button>&nbsp;&nbsp;
+            <Button onClick={this.onCommit2}>this.$store.dispatch( mutation )</Button>
+            <br />
+            <br />
+            <Button type="primary" onClick={this.onDispatch}>this.$sam.dispatch( action )</Button>&nbsp;&nbsp;
+            <Button type="primary" onClick={this.onDispatch2}>this.$store.dispatchAsync( action )</Button>
+            <br />
+            <br />
+            <Button onClick={this.onDispatch3}>this.$sam.dispatch( mutation )</Button>&nbsp;&nbsp;
+            <Button onClick={this.onDispatch4}>this.$store.dispatchAsync( mutation )</Button>
           </div>
           <p>{this.props.count}</p>
           <p>

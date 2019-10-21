@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { currency } from '../currency';
 import { connect } from 'react-redux';
 import { cartTotalPrice, cartProducts } from '../store/getters';
+import { Button } from 'antd';
 
 class ShoppingCart extends Component {
   constructor(props) {
@@ -30,7 +31,7 @@ class ShoppingCart extends Component {
           ))}
         </ul>
         <p>Total: {currency(cartTotalPrice(products))}</p>
-        <p><button disabled={!len} onClick={() => this.checkout(products)}>Checkout</button></p>
+        <p><Button type="primary" disabled={!len} onClick={() => this.checkout(products)}>Checkout</Button></p>
         <p style={{ display: checkoutStatus ? 'block' : 'none' }}>Checkout {checkoutStatus}.</p>
       </div>
     );

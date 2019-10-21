@@ -1,5 +1,5 @@
 /*
- * redux-sam.js v1.1.2
+ * redux-sam.js v1.2.0
  * (c) 2018-2019 Jesse Feng
  * Released under the MIT License.
  */
@@ -24,7 +24,7 @@ function createSamLogger(ref) {
 
       if (filter(mutation, prevState, nextState)) {
         var time = new Date();
-        var formattedTime = " @ " + (pad(time.getHours(), 2)) + ":" + (pad(time.getMinutes(), 2)) + ":" + (pad(time.getSeconds(), 2)) + "." + (pad(time.getMilliseconds(), 3));
+        var formattedTime = " @ " + (time.toLocaleTimeString());
         var formattedMutation = mutationTransformer(mutation);
         var message = "mutation " + (mutation.type) + formattedTime;
         var startMessage = collapsed
@@ -52,14 +52,6 @@ function createSamLogger(ref) {
       prevState = nextState;
     });
   };
-}
-
-function repeat(str, times) {
-  return (new Array(times + 1)).join(str);
-}
-
-function pad(num, maxLength) {
-  return repeat('0', maxLength - num.toString().length) + num;
 }
 
 export default createSamLogger;

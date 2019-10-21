@@ -32,7 +32,7 @@ class App extends PureComponent {
   capitalize = s => s.charAt(0).toUpperCase() + s.slice(1)
 
   addTodo = (e) => {
-    if ((e.switch || e.keyCode) === 13) {
+    if ((e.which || e.keyCode) === 13) {
       const text = e.target.value;
       if (text.trim()) {
         sam.dispatch('addTodo', text);

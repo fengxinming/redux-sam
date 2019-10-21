@@ -13,7 +13,7 @@ import { installModule, genericSubscribe, resetSam } from './lib/samHelper';
  *   modules: { ... }
  * });
  *
- * const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));
+ * const store = Redux.createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));
  *
  */
 export default class Sam {

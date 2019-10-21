@@ -1,29 +1,33 @@
+import './index.styl';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { recentHistory } from '../../store/getters';
+import { Button } from 'antd';
 
 class Counter extends Component {
   constructor(props) {
     super(props);
 
     this.$mapActions([
-      'increment',
-      'decrement',
       'incrementIfOdd',
       'incrementAsync'
+    ]);
+    this.$mapMutations([
+      'increment',
+      'decrement'
     ]);
   }
 
   render() {
     return (
-      <div>
+      <div className="cmp-counter">
         Value: {this.props.count}
         <br />
-        <button onClick={this.increment}>+</button>
-        <button onClick={this.decrement}>-</button>
         <br />
-        <button onClick={this.incrementIfOdd}>Increment if odd</button>
-        <button onClick={this.incrementAsync}>Increment async</button>
+        <Button type="primary" onClick={this.increment}>+</Button>&nbsp;
+        <Button type="primary" onClick={this.decrement}>-</Button>&nbsp;
+        <Button type="primary" onClick={this.incrementIfOdd}>Increment if odd</Button>&nbsp;
+        <Button type="primary" onClick={this.incrementAsync}>Increment async</Button>
         <div>
           <div>Recent History (last 5 entries): {recentHistory(this.props.history)}</div>
         </div>

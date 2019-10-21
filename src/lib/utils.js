@@ -2,6 +2,19 @@ import isObject from 'celia/isObject';
 import isString from 'celia/isString';
 import forOwn from 'celia/forOwn';
 
+function getLogger(level) {
+  /**
+   * 输出错误消息
+   * @param {...any} args
+   */
+  return function logger(...args) {
+    console[level](`${(new Date()).toLocaleTimeString()} [${level}] [redux-sam]`, ...args);
+  }
+}
+
+export const error = getLogger('error');
+export const info = getLogger('info');
+
 /**
  * 断言
  *
@@ -121,7 +134,7 @@ export function normalizeMap(map, callback) {
 export function getContextByNamespace(sam, helper, namespace) {
   const ctx = sam._contextNamespaceMap[namespace];
   if (process.env.NODE_ENV !== 'production' && !ctx) {
-    console.error(`[redux-sam] module namespace not found in ${helper}(): ${namespace}`);
+    error(`module namespace not found in ${helper}(): ${namespace}`);
   }
   return ctx;
 }

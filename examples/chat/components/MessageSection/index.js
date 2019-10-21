@@ -30,7 +30,7 @@ class MessageSection extends Component {
   }
 
   onKeyUp = (e) => {
-    switch (e.switch || e.keyCode) {
+    switch (e.which || e.keyCode) {
       case 13: // 回车
         this.sendMessage(e);
         break;

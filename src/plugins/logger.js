@@ -18,7 +18,7 @@ export default function createSamLogger({
 
       if (filter(mutation, prevState, nextState)) {
         const time = new Date();
-        const formattedTime = ` @ ${pad(time.getHours(), 2)}:${pad(time.getMinutes(), 2)}:${pad(time.getSeconds(), 2)}.${pad(time.getMilliseconds(), 3)}`;
+        const formattedTime = ` @ ${time.toLocaleTimeString()}`;
         const formattedMutation = mutationTransformer(mutation);
         const message = `mutation ${mutation.type}${formattedTime}`;
         const startMessage = collapsed
@@ -46,12 +46,4 @@ export default function createSamLogger({
       prevState = nextState;
     });
   };
-}
-
-function repeat(str, times) {
-  return (new Array(times + 1)).join(str);
-}
-
-function pad(num, maxLength) {
-  return repeat('0', maxLength - num.toString().length) + num;
 }

@@ -5,7 +5,7 @@ import ShoppingCart from './ShoppingCart.js'
 class App extends PureComponent {
   render() {
     return (
-      <div id="app">
+      <div id="app" style={{ margin: '20px' }}>
         <h1>Shopping Cart Example</h1>
         <hr />
         <h2>Products</h2>

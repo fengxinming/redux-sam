@@ -37,11 +37,15 @@ export default function (options, proto) {
     sam.state,
     applyMiddleware(middleware(sam))
   );
-  const { mapActions, mapMutations } = createHelpers(sam);
-  const ret = { store, sam, mapActions, mapMutations };
+
+  !store.dispatchAsync && (store.dispatchAsync = sam.dispatch);
+
+  const ref = createHelpers(sam);
+  ref.store = store;
+  ref.sam = sam;
 
   // 往组件上挂载自定义函数
-  install(proto, ret);
+  install(proto, ref);
 
-  return ret;
+  return ref;
 };

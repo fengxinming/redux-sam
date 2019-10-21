@@ -1,5 +1,5 @@
 /*
- * redux-sam.js v1.1.2
+ * redux-sam.js v1.2.0
  * (c) 2018-2019 Jesse Feng
  * Released under the MIT License.
  */
@@ -10,6 +10,22 @@ import forOwn from 'celia/forOwn';
 import isPromiseLike from 'celia/isPromiseLike';
 import append from 'celia/_append';
 import assign from 'celia/assign';
+
+function getLogger(level) {
+  /**
+   * 输出错误消息
+   * @param {...any} args
+   */
+  return function logger() {
+    var args = [], len = arguments.length;
+    while ( len-- ) args[ len ] = arguments[ len ];
+
+    console[level].apply(console, [ (((new Date()).toLocaleTimeString()) + " [" + level + "] [redux-sam]") ].concat( args ));
+  }
+}
+
+var error = getLogger('error');
+var info = getLogger('info');
 
 /**
  * 断言
@@ -130,7 +146,7 @@ function normalizeMap(map, callback) {
 function getContextByNamespace(sam, helper, namespace) {
   var ctx = sam._contextNamespaceMap[namespace];
   if (process.env.NODE_ENV !== 'production' && !ctx) {
-    console.error(("[redux-sam] module namespace not found in " + helper + "(): " + namespace));
+    error(("module namespace not found in " + helper + "(): " + namespace));
   }
   return ctx;
 }
@@ -187,7 +203,7 @@ function makeLocalContext(sam, namespace, path) {
       if (hasNamespace && !options.root) {
         type = namespace + type;
         if (process.env.NODE_ENV !== 'production' && !sam._actions[type]) {
-          console.error(("[redux-sam] unknown local action type: " + (args.type) + ", global type: " + type));
+          error(("unknown local action type: " + (args.type) + ", global type: " + type));
           return;
         }
       }
@@ -204,7 +220,7 @@ function makeLocalContext(sam, namespace, path) {
         if (!options.root) {
           type = namespace + type;
           if (process.env.NODE_ENV !== 'production' && !sam._mutations[type]) {
-            console.error(("[redux-sam] unknown local mutation type: " + (args.type) + ", global type: " + type));
+            error(("unknown local mutation type: " + (args.type) + ", global type: " + type));
             return;
           }
         }
@@ -232,8 +248,8 @@ function makeLocalContext(sam, namespace, path) {
  *
  * @param {Sam} sam
  * @param {Array|String} path
- * @param {*} rawModule
- * @param {*} hot
+ * @param {Object} rawModule
+ * @param {Boolean} hot
  */
 function installModule(sam, path, rawModule, hot) {
   var isRoot = !path.length;
@@ -252,7 +268,7 @@ function installModule(sam, path, rawModule, hot) {
     // 分类指定命名空间的模块
     if (rawModule.namespaced) {
       if (process.env.NODE_ENV !== 'production' && sam._contextNamespaceMap[namespace]) {
-        console.error(("[redux-sam] duplicate namespace " + namespace + " for the namespaced module " + (path.join('/'))));
+        error(("duplicate namespace " + namespace + " for the namespaced module " + (path.join('/'))));
       }
       sam._contextNamespaceMap[namespace] = local;
     }
@@ -372,7 +388,7 @@ function assertRawModule(path, rawModule) {
  *   modules: { ... }
  * });
  *
- * const store = createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));
+ * const store = Redux.createStore(reducer(sam), sam.state, applyMiddleware(middleware(sam)));
  *
  */
 var Sam = function Sam(options) {
@@ -584,7 +600,7 @@ function reducer(sam) {
     var entry = sam._mutations[type];
     if (!entry) {
       if (process.env.NODE_ENV !== 'production') {
-        console.error(("[redux-sam] unknown mutation type: " + type));
+        error(("unknown mutation type: " + type));
       }
       return;
     }
@@ -615,8 +631,7 @@ function triggerActionSubscribers(actionSubscribers, method, action, state) {
       });
   } catch (e) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn(("[redux-sam] error in " + method + " action subscribers: "));
-      console.error(e);
+      error(("error in " + method + " action subscribers: "), e);
     }
   }
 }
@@ -630,38 +645,44 @@ function middleware(sam) {
     var dispatch = ref.dispatch;
 
     // 挂载 commit 方法 至 sam 对象上，用于触发异步函数
-    if (!sam.dispatch) {
-      sam.dispatch = function (_type, _payload, _options) {
-        var action = unifyObjectStyle(_type, _payload, _options);
-        action.options.async = true;
-        return dispatch(action);
-      };
-    }
-
-    // 挂载 commit 方法 至 sam 对象上，用于同步更新状态
-    if (!sam.commit) {
-      sam.commit = dispatch;
-    }
+    !sam.dispatch && (sam.dispatch = function (_type, _payload, _options) {
+      var action = unifyObjectStyle(_type, _payload, _options);
+      var options = action.options;
+      options.async === undefined && (options.async = true);
+      return dispatch(action);
+    });
 
     return function (next) {
+      // 挂载 commit 方法 至 sam 对象上，用于同步更新状态
+      !sam.commit && (sam.commit = function (_type, _payload, _options) {
+        // 入参兼容
+        return next(unifyObjectStyle(_type, _payload, _options));
+      });
+
       return function (_type, _payload, _options) {
         // 入参兼容
         var action = unifyObjectStyle(_type, _payload, _options);
-        var type = action.type;
-        var payload = action.payload;
         var options = action.options;
 
         // 触发异步方法
         if (options.async) {
+          var type = action.type;
+          var payload = action.payload;
           var _actions = sam._actions;
           var _actionSubscribers = sam._actionSubscribers;
 
           var entry = _actions[type];
           if (!entry) {
             if (process.env.NODE_ENV !== 'production') {
-              console.error(("[redux-sam] unknown action type: " + type));
+              // error(`unknown action type: ${type}`);
+              info(("unknown action type: " + type + ", trying mutation type: " + type + " ..."));
             }
-            return;
+            // return;
+            entry = [function () {
+              return new Promise(function (resolve) {
+                resolve(next(action));
+              });
+            }];
           }
 
           triggerActionSubscribers(_actionSubscribers, 'before', action, sam.state);
@@ -676,7 +697,7 @@ function middleware(sam) {
           });
         }
 
-        // next 为 createStore 里面的 dispatch 方法
+        // next 为 redux createStore 里面的 dispatch 方法
         return next(action);
       };
     };
@@ -759,17 +780,19 @@ function createStore$1 (options, proto) {
     sam.state,
     applyMiddleware(middleware(sam))
   );
+
+  !store.dispatchAsync && (store.dispatchAsync = sam.dispatch);
+
   var ref = createHelpers(sam);
-  var mapActions = ref.mapActions;
-  var mapMutations = ref.mapMutations;
-  var ret = { store: store, sam: sam, mapActions: mapActions, mapMutations: mapMutations };
+  ref.store = store;
+  ref.sam = sam;
 
   // 往组件上挂载自定义函数
-  install(proto, ret);
+  install(proto, ref);
 
-  return ret;
+  return ref;
 }
 
-var version = '1.1.2';
+var version = '1.2.0';
 
 export { Sam, createHelpers, createStore$1 as createStore, install, middleware, reducer, version };

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { currency } from '../currency';
 import { connect } from 'react-redux';
+import { Button } from 'antd';
 
 class ProductList extends Component {
   constructor(props) {
@@ -18,14 +19,14 @@ class ProductList extends Component {
       <ul>
         {
           this.props.products.map(product => (
-            <li key={product.id}>
-              {product.title} - {currency(product.price)}
-              <br />
-              <button
+            <li key={product.id} style={{ lineHeight: '40px' }}>
+              <label style={{ display: 'inline-block', width: '300px' }}>{product.title} - {currency(product.price)}</label>
+              <Button
+                type="primary"
                 disabled={!product.inventory}
                 onClick={() => this.addProductToCart(product)}>
                 Add to cart
-              </button>
+              </Button>
             </li>
           ))
         }
